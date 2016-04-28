@@ -323,7 +323,8 @@ public class Nico {
     } else if (term instanceof TermFrequency) {
       System.out.println("    Frequency: " + term.getValue());
     } else if (term instanceof TermFunction) {
-      System.out.println("    Function: " + term.getValue());
+      System.out.println(((TermFunction) term).getFunctionName());
+	  System.out.println("    Function: " + term.getValue());
     } else if (term instanceof TermIdent) {
       System.out.println("    Ident: " + term.getValue());
     } else if (term instanceof TermInteger) {

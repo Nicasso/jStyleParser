@@ -227,12 +227,12 @@ public class CSSParserListenerImpl implements CSSParserListener {
     }
 
     private void logEnter(String entry) {
-    	//System.out.println("Enter: "+entry);
+//    	System.out.println("Enter: "+entry);
         log.trace("Enter: " + generateSpaces(spacesCounter) + "{}", entry);
     }
 
     private void logLeave(String leaving) {
-    	//System.out.println("Exit: "+leaving);
+//    	System.out.println("Exit: "+leaving);
         log.trace("Leave: " + generateSpaces(spacesCounter) + "{}", leaving);
     }
 
@@ -480,12 +480,15 @@ public class CSSParserListenerImpl implements CSSParserListener {
 
     @Override
     public void exitFunct(CSSParser.FunctContext ctx) {
+    	System.out.println("KAK");
         if (ctx.EXPRESSION() != null) {
             //EXPRESSION
             throw new UnsupportedOperationException("EXPRESSIONS are not allowed yet");
             //todo
         } else {
             String fname = extractTextUnescaped(ctx.FUNCTION().getText());
+            
+            System.out.println("fname: "+fname);
             
             if (fname.equalsIgnoreCase("url")) {
                 if (terms_stack.peek().unary == -1 || tmpTermList == null || tmpTermList.size() != 1) {
@@ -503,14 +506,14 @@ public class CSSParserListenerImpl implements CSSParserListener {
             	function.setFunctionName("rgb");
             	function.setValue(tmpTermList);
             	TermColor color =  TermColorImpl.getColorByFunction(function);
-            	color.setOriginalFormat(ctx.getText());
+//            	color.setOriginalFormat(ctx.getText());
             	terms_stack.peek().term = color;
             } else if (fname.equalsIgnoreCase("rgba(")) {
             	TermFunction function = tf.createFunction();
             	function.setFunctionName("rgba");
             	function.setValue(tmpTermList);
             	TermColor color =  TermColorImpl.getColorByFunction(function);
-            	color.setOriginalFormat(ctx.getText());
+//            	color.setOriginalFormat(ctx.getText());
             	terms_stack.peek().term = color;
             } else {
                 TermFunction function = tf.createFunction();
@@ -553,7 +556,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
         } else if (ctx.HASH() != null) {
             log.debug("VP - hash");
              TermColor color = tf.createColor(ctx.HASH().getText());
-             color.setOriginalFormat(ctx.getText());
+//             color.setOriginalFormat(ctx.getText());
              terms_stack.peek().term = color;
             if(terms_stack.peek().term == null){
                 tmpDeclarationScope.invalid = true;
@@ -590,15 +593,15 @@ public class CSSParserListenerImpl implements CSSParserListener {
     @Override
     public void exitValuepart(CSSParser.ValuepartContext ctx) {   	
         //try convert color from current term
+    	System.out.println(ctx.getText());
         if (terms_stack.peek().term != null) {
             TermColor termColor = null;
             if (terms_stack.peek().term instanceof TermIdent) { // red
                 termColor = tf.createColor((TermIdent) terms_stack.peek().term);
-                termColor.setOriginalFormat(ctx.getText());
+//                termColor.setOriginalFormat(ctx.getText());
             } else if (terms_stack.peek().term instanceof TermFunction) { // rgba(0,0,0)
                 termColor = tf.createColor((TermFunction) terms_stack.peek().term);
-                termColor.setOriginalFormat(ctx.getText());
-
+//                termColor.setOriginalFormat(ctx.getText());
             }
             if (termColor != null) {
                 log.debug("term color is OK - creating - " + termColor.toString());
