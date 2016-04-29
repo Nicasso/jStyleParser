@@ -1,6 +1,7 @@
 package cz.vutbr.web.csskit;
 
 import cz.vutbr.web.css.CSSNodeVisitor;
+import cz.vutbr.web.css.CodeLocation;
 import cz.vutbr.web.css.TermFrequency;
 
 public class TermFrequencyImpl extends TermFloatValueImpl implements TermFrequency {
@@ -28,6 +29,16 @@ public class TermFrequencyImpl extends TermFloatValueImpl implements TermFrequen
 				throw new IllegalArgumentException("Null or negative value for CSS time");
 		this.value = value;
 		return this;
+	}
+	
+    protected CodeLocation location;
+	
+	public CodeLocation getLocation() {
+		return location;
+	}
+
+	public void setLocation(CodeLocation location) {
+		this.location = location;
 	}
 	
 }

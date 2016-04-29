@@ -110,4 +110,8 @@ public interface TermNumeric<T extends Number> extends Term<T> {
      */
     public TermNumeric<T> setZero();
     
+	public void setLocation(CodeLocation location);
+    
+    public CodeLocation getLocation();
+    
 }

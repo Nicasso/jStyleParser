@@ -6,5 +6,7 @@ package cz.vutbr.web.css;
  *
  */
 public interface TermFrequency extends TermFloatValue {
-
+	public void setLocation(CodeLocation location);
+    
+    public CodeLocation getLocation();
 }

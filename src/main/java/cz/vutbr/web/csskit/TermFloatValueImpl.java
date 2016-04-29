@@ -1,6 +1,7 @@
 package cz.vutbr.web.csskit;
 
 import cz.vutbr.web.css.CSSNodeVisitor;
+import cz.vutbr.web.css.CodeLocation;
 import cz.vutbr.web.css.Term;
 import cz.vutbr.web.css.TermFloatValue;
 import cz.vutbr.web.css.TermNumeric;
@@ -11,6 +12,19 @@ import cz.vutbr.web.css.TermNumeric;
  */
 public class TermFloatValueImpl extends TermNumericImpl<Float> implements TermFloatValue
 {
+	
+	protected CodeLocation location;
+	
+	@Override
+	public CodeLocation getLocation() {
+		return this.location;
+	}
+	
+	@Override
+	public void setLocation(CodeLocation location) {
+		this.location = location;
+	}
+	
 	
 	/**
 	 * Accept method required by the visitor pattern for traversing the CSS Tree. 

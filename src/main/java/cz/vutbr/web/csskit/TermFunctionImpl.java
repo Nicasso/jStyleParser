@@ -3,6 +3,7 @@ package cz.vutbr.web.csskit;
 import org.unbescape.css.CssEscape;
 
 import cz.vutbr.web.css.CSSNodeVisitor;
+import cz.vutbr.web.css.CodeLocation;
 import cz.vutbr.web.css.TermFunction;
 
 /**
@@ -30,6 +31,16 @@ public class TermFunctionImpl extends TermListImpl implements TermFunction {
 	@Override
 	public Object accept(CSSNodeVisitor visitor) {
 		return visitor.visit(this);
+	}
+	
+    protected CodeLocation location;
+	
+	public CodeLocation getLocation() {
+		return location;
+	}
+
+	public void setLocation(CodeLocation location) {
+		this.location = location;
 	}
     
     

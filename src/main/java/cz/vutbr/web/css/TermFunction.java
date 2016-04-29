@@ -12,4 +12,7 @@ public interface TermFunction extends TermList {
     
     public TermFunction setFunctionName(String functionName);
 
+	public void setLocation(CodeLocation location);
+    
+    public CodeLocation getLocation();
 }

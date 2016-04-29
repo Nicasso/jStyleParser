@@ -6,5 +6,7 @@ package cz.vutbr.web.css;
  * @author Karel Piwko, 2008
  */
 public interface TermNumber extends TermFloatValue {
-
+	public void setLocation(CodeLocation location);
+    
+    public CodeLocation getLocation();
 }

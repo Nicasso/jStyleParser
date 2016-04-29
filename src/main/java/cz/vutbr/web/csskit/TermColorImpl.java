@@ -3,6 +3,7 @@ package cz.vutbr.web.csskit;
 import java.awt.Color;
 
 import cz.vutbr.web.css.CSSNodeVisitor;
+import cz.vutbr.web.css.CodeLocation;
 import cz.vutbr.web.css.Term;
 import cz.vutbr.web.css.TermColor;
 import cz.vutbr.web.css.TermFunction;
@@ -34,6 +35,16 @@ public class TermColorImpl extends TermImpl<Color> implements TermColor {
 	
     public String getOriginalFormat() {
 		return originalFormat;
+	}
+    
+    protected CodeLocation location;
+	
+	public CodeLocation getLocation() {
+		return location;
+	}
+
+	public void setLocation(CodeLocation location) {
+		this.location = location;
 	}
 
 	public void setOriginalFormat(String originalFormat) {

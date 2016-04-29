@@ -5,6 +5,7 @@ import java.net.URL;
 import org.unbescape.css.CssEscape;
 
 import cz.vutbr.web.css.CSSNodeVisitor;
+import cz.vutbr.web.css.CodeLocation;
 import cz.vutbr.web.css.TermURI;
 
 /**
@@ -15,6 +16,16 @@ import cz.vutbr.web.css.TermURI;
 public class TermURIImpl extends TermImpl<String> implements TermURI {
 
     protected URL base;
+    
+    protected CodeLocation location;
+	
+	public CodeLocation getLocation() {
+		return location;
+	}
+
+	public void setLocation(CodeLocation location) {
+		this.location = location;
+	}
     
 	protected TermURIImpl() {
 	}

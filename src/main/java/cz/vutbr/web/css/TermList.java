@@ -8,5 +8,7 @@ import java.util.List;
  *
  */
 public interface TermList extends Term<List<Term<?>>>, List<Term<?>> {
-
+	public void setLocation(CodeLocation location);
+    
+    public CodeLocation getLocation();
 }

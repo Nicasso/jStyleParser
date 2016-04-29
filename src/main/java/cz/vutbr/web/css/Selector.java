@@ -203,6 +203,9 @@ public interface Selector extends Rule<Selector.SelectorPart> {
     	public static final String WILDCARD = "*";    	
     	public String getName();
     	public ElementName setName(String name);
+    	
+    	public CodeLocation getLocation();
+        public void setLocation(CodeLocation location);
     }
     
     /**
@@ -220,6 +223,9 @@ public interface Selector extends Rule<Selector.SelectorPart> {
     	
     	public Operator getOperator();
     	public void setOperator(Operator operator);
+    	
+    	public CodeLocation getLocation();
+        public void setLocation(CodeLocation location);
     }
     
     /**
@@ -249,6 +255,9 @@ public interface Selector extends Rule<Selector.SelectorPart> {
     public interface ElementDOM extends SelectorPart {
     	public Element getElement();
     	public ElementDOM setElement(Element e);
+    	
+    	public CodeLocation getLocation();
+        public void setLocation(CodeLocation location);
     }
     
     /**
@@ -264,6 +273,9 @@ public interface Selector extends Rule<Selector.SelectorPart> {
     	public PseudoPage setValue(String value);
     	
         public PseudoDeclaration getDeclaration();
+        
+        public CodeLocation getLocation();
+        public void setLocation(CodeLocation location);
         
     }
        

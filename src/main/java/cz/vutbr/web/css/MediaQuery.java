@@ -37,4 +37,8 @@ public interface MediaQuery extends Rule<MediaExpression>
      */
     public String getType();
     
+    public void setLocation(CodeLocation location);
+    
+    public CodeLocation getLocation();
+    
 }

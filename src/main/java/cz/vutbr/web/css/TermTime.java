@@ -6,5 +6,8 @@ package cz.vutbr.web.css;
  *
  */
 public interface TermTime extends TermFloatValue {
+	public void setLocation(CodeLocation location);
+    
+    public CodeLocation getLocation();
 
 }

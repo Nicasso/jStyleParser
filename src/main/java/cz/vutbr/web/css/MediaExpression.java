@@ -24,4 +24,8 @@ public interface MediaExpression extends Rule<Term<?>>
      */
     public void setFeature(String feature);
     
+    public void setLocation(CodeLocation location);
+    
+    public CodeLocation getLocation();
+    
 }

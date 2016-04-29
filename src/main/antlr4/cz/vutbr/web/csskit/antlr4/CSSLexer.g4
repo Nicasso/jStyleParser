@@ -444,6 +444,11 @@ EXPRESSION
 //  { er.read(); }
   ;
   
+/** Calc function */
+CALC
+  : 'calc('
+  ;
+  
 /** Other Function beginning */	
 FUNCTION
 	: IDENT_MACR '('

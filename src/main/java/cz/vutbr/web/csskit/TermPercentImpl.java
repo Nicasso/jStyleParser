@@ -1,6 +1,7 @@
 package cz.vutbr.web.csskit;
 
 import cz.vutbr.web.css.CSSNodeVisitor;
+import cz.vutbr.web.css.CodeLocation;
 import cz.vutbr.web.css.TermPercent;
 
 /**
@@ -27,6 +28,16 @@ public class TermPercentImpl extends TermFloatValueImpl implements TermPercent {
 	@Override
 	public Object accept(CSSNodeVisitor visitor) {
 		return visitor.visit(this);
+	}
+	
+    protected CodeLocation location;
+	
+	public CodeLocation getLocation() {
+		return location;
+	}
+
+	public void setLocation(CodeLocation location) {
+		this.location = location;
 	}
     
 	@Override

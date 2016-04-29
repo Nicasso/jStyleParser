@@ -1,6 +1,7 @@
 package cz.vutbr.web.csskit;
 
 import cz.vutbr.web.css.CSSNodeVisitor;
+import cz.vutbr.web.css.CodeLocation;
 import cz.vutbr.web.css.TermLength;
 
 public class TermLengthImpl extends TermFloatValueImpl implements TermLength {
@@ -25,5 +26,15 @@ public class TermLengthImpl extends TermFloatValueImpl implements TermLength {
     {
         return false;
     }
+    
+    protected CodeLocation location;
+	
+	public CodeLocation getLocation() {
+		return location;
+	}
+
+	public void setLocation(CodeLocation location) {
+		this.location = location;
+	}
 	
 }

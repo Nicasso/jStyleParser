@@ -53,8 +53,10 @@ public class CSSParserListenerImpl implements CSSParserListener {
     private List<RuleMargin> tmpMargins;
     private RuleMargin tmpMarginRule;
 
-    private CodeLocation tmpStyleSheetLocation;    
-    private CSSComment tmpStyleSheetComment;    
+    private CodeLocation tmpStyleSheetLocation;
+
+    private boolean preventStyleSheetComment;
+    private CSSComment tmpStyleSheetComment;
     private CSSComment tmpDeclarationComment;
     private CSSComment tmpStatementComment;
 
@@ -227,12 +229,12 @@ public class CSSParserListenerImpl implements CSSParserListener {
     }
 
     private void logEnter(String entry) {
-//    	System.out.println("Enter: "+entry);
+    	System.out.println("Enter: "+entry);
         log.trace("Enter: " + generateSpaces(spacesCounter) + "{}", entry);
     }
 
     private void logLeave(String leaving) {
-//    	System.out.println("Exit: "+leaving);
+    	System.out.println("Exit: "+leaving);
         log.trace("Leave: " + generateSpaces(spacesCounter) + "{}", leaving);
     }
 
@@ -261,6 +263,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
     @Override
     public void enterStylesheet(CSSParser.StylesheetContext ctx) {
         logEnter("stylesheet: " + ctx.getText());
+        preventStyleSheetComment = false;
         rules = new RuleArrayList();
         tmpStyleSheetLocation = getCodeLocation(ctx, 0);
     }
@@ -275,6 +278,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
     @Override
     public void enterStatement(CSSParser.StatementContext ctx) {
         logEnter("statement: " + ctx.getText());
+        preventStyleSheetComment = true;
         stmtIsValid = true;
         tmpRuleList = new RuleArrayList();
     }
@@ -480,15 +484,12 @@ public class CSSParserListenerImpl implements CSSParserListener {
 
     @Override
     public void exitFunct(CSSParser.FunctContext ctx) {
-    	System.out.println("KAK");
         if (ctx.EXPRESSION() != null) {
             //EXPRESSION
             throw new UnsupportedOperationException("EXPRESSIONS are not allowed yet");
             //todo
         } else {
             String fname = extractTextUnescaped(ctx.FUNCTION().getText());
-            
-            System.out.println("fname: "+fname);
             
             if (fname.equalsIgnoreCase("url")) {
                 if (terms_stack.peek().unary == -1 || tmpTermList == null || tmpTermList.size() != 1) {
@@ -529,6 +530,8 @@ public class CSSParserListenerImpl implements CSSParserListener {
                 log.debug("Setting function: {}", function.toString());
 
             }
+            
+            terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
             //function
         }
         logLeave("funct");
@@ -587,13 +590,14 @@ public class CSSParserListenerImpl implements CSSParserListener {
             terms_stack.peek().term = null;
             tmpDeclarationScope.invalid = true;
         }
+        
+        terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
 
     }
 
     @Override
     public void exitValuepart(CSSParser.ValuepartContext ctx) {   	
         //try convert color from current term
-    	System.out.println(ctx.getText());
         if (terms_stack.peek().term != null) {
             TermColor termColor = null;
             if (terms_stack.peek().term instanceof TermIdent) { // red
@@ -633,6 +637,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
         logEnter("combinedselector : " + combinedSelector);
         tmpCombinedSelectorInvalid = false;
         tmpCombinedSelector = (CombinedSelector) rf.createCombinedSelector().unlock();
+        tmpCombinedSelector.setLocation(getCodeLocation(ctx, 0));
     }
 
     @Override
@@ -844,6 +849,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
             }
         }
         Selector.ElementAttribute elemAttr = rf.createAttribute(value, isStringValue, op, attributeName);
+        elemAttr.setLocation(getCodeLocation(ctx, 0));
         tmpSelector.add(elemAttr);
     }
 
@@ -904,6 +910,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
         //kontrola, zda probehla sematicka kontrola spravne
         if (tmpPseudo != null) {
             log.debug("Setting pseudo: {}", tmpPseudo.toString());
+            tmpPseudo.setLocation(getCodeLocation(ctx, 0));
             tmpSelector.add(tmpPseudo);
         }
     }
@@ -1081,6 +1088,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
         if (rb != null) {
             rules.add(rb);
         }
+        
         this.preventImports = true;
     }
 
@@ -1142,6 +1150,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
         logEnter("media_query: " + ctx.getText());
         tmpMediaQueryScope = new mediaquery_scope();
         tmpMediaQueryScope.q = rf.createMediaQuery();
+        tmpMediaQueryScope.q.setLocation(getCodeLocation(ctx, 0));
         tmpMediaQueryScope.q.unlock();
         tmpMediaQueryScope.state = MediaQueryState.START;
         tmpMediaQueryScope.invalid = false;
@@ -1186,6 +1195,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
                 log.debug("Invalid media query: found ident: {} state: {}", m, state);
                 tmpMediaQueryScope.invalid = true;
             }
+            tmpMediaQueryScope.q.setLocation(getCodeLocation(ctx, 0));
         } else if (ctx.media_expression() != null) {
             // in enterMedia_expression
             // empty here
@@ -1228,6 +1238,8 @@ public class CSSParserListenerImpl implements CSSParserListener {
         tmpDeclarationScope.d.setProperty(extractTextUnescaped(ctx.IDENT().getText()));
         Token token = ctx.IDENT().getSymbol();
         tmpDeclarationScope.d.setSource(extractSource((CSSToken) token));
+        
+        tmpDeclarationScope.d.setLocation(getCodeLocation(ctx, 0));
     }
 
     @Override
@@ -1293,15 +1305,16 @@ public class CSSParserListenerImpl implements CSSParserListener {
 
     @Override
 	public void enterComment(CommentContext ctx) {
-		
+    	logEnter("comment: " + ctx.getText());
 	}
 
 	@Override
 	public void exitComment(CommentContext ctx) {
+		logLeave("comment: " + ctx.getText());
 		cz.vutbr.web.css.CodeLocation location = getCodeLocation(ctx, 0);
 		
 		String context = ctx.getParent().getClass().getSimpleName();
-		if (tmpStyleSheetComment == null) {
+		if (tmpStyleSheetComment == null && preventStyleSheetComment == false) {
 			tmpStyleSheetComment = new CommentImpl(ctx.getText(), location);
 		} else if(context.equals("StatementContext")){
 			tmpStatementComment = new CommentImpl(ctx.getText(), location);

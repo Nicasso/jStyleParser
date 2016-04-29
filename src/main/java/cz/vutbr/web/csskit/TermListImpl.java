@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import cz.vutbr.web.css.CSSNodeVisitor;
+import cz.vutbr.web.css.CodeLocation;
 import cz.vutbr.web.css.Term;
 import cz.vutbr.web.css.TermList;
 
@@ -149,6 +150,18 @@ public class TermListImpl extends AbstractList<Term<?>> implements TermList {
 		} catch (CloneNotSupportedException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	protected CodeLocation location;
+	
+	@Override
+	public CodeLocation getLocation() {
+		return location;
+	}
+
+	@Override
+	public void setLocation(CodeLocation location) {
+		this.location = location;
 	}
 
 }

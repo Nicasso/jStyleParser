@@ -10,5 +10,7 @@ package cz.vutbr.web.css;
  */
 public interface TermFloatValue extends TermNumeric<Float>
 {
-
+	public void setLocation(CodeLocation location);
+    
+    public CodeLocation getLocation();
 }

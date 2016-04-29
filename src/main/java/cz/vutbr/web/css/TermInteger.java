@@ -11,4 +11,8 @@ public interface TermInteger extends TermLength {
     
     public TermInteger setValue(int value);
     
+	public void setLocation(CodeLocation location);
+    
+    public CodeLocation getLocation();
+    
 }

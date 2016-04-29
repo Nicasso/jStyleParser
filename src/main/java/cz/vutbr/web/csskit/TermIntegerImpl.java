@@ -1,6 +1,7 @@
 package cz.vutbr.web.csskit;
 
 import cz.vutbr.web.css.CSSNodeVisitor;
+import cz.vutbr.web.css.CodeLocation;
 import cz.vutbr.web.css.TermInteger;
 
 public class TermIntegerImpl extends TermLengthImpl implements TermInteger {
@@ -38,5 +39,15 @@ public class TermIntegerImpl extends TermLengthImpl implements TermInteger {
             return operator.value() + getIntValue();
         return String.valueOf(getIntValue());
     }
+    
+    protected CodeLocation location;
+	
+	public CodeLocation getLocation() {
+		return location;
+	}
+
+	public void setLocation(CodeLocation location) {
+		this.location = location;
+	}
 
 }

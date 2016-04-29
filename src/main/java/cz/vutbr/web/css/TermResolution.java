@@ -11,5 +11,7 @@ package cz.vutbr.web.css;
  */
 public interface TermResolution extends TermFloatValue
 {
-
+	public void setLocation(CodeLocation location);
+    
+    public CodeLocation getLocation();
 }

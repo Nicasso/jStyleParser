@@ -14,4 +14,7 @@ public interface TermURI extends Term<String> {
     public TermURI setBase(URL base);
     public URL getBase();
 
+	public void setLocation(CodeLocation location);
+    
+    public CodeLocation getLocation();
 }

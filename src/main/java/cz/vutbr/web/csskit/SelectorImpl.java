@@ -209,6 +209,18 @@ public class SelectorImpl extends AbstractRule<Selector.SelectorPart> implements
 		
     	private String name;
     	
+    	protected CodeLocation location;
+    	
+    	@Override
+    	public CodeLocation getLocation() {
+    		return this.location;
+    	}
+    	
+    	@Override
+    	public void setLocation(CodeLocation location) {
+    		this.location = location;
+    	}
+    	
     	protected ElementNameImpl(String name) {
     		setName(name);
     	}
@@ -419,6 +431,18 @@ public class SelectorImpl extends AbstractRule<Selector.SelectorPart> implements
             PSEUDO_DECLARATIONS.put("before", PseudoDeclaration.BEFORE);
             PSEUDO_DECLARATIONS.put("after", PseudoDeclaration.AFTER);
         }
+        
+        protected CodeLocation location;
+    	
+    	@Override
+    	public CodeLocation getLocation() {
+    		return this.location;
+    	}
+    	
+    	@Override
+    	public void setLocation(CodeLocation location) {
+    		this.location = location;
+    	}
         
         /**
     	 * Accept method required by the visitor pattern for traversing the CSS Tree. 
@@ -924,6 +948,18 @@ public class SelectorImpl extends AbstractRule<Selector.SelectorPart> implements
     	private String value;
     	private boolean isStringValue;
     	
+    	protected CodeLocation location;
+    	
+    	@Override
+    	public CodeLocation getLocation() {
+    		return this.location;
+    	}
+    	
+    	@Override
+    	public void setLocation(CodeLocation location) {
+    		this.location = location;
+    	}
+    	
     	protected ElementAttributeImpl(String value, boolean isStringValue, Operator operator, String attribute) {
     		this.isStringValue = isStringValue;
     		this.operator = operator;
@@ -1072,6 +1108,18 @@ public class SelectorImpl extends AbstractRule<Selector.SelectorPart> implements
     	private Element elem;
     	/** When set to true, the selector has a maximal specificity (inline). Otherwise, it has a minimal specificity. */
     	private boolean inlinePriority;
+    	
+    	protected CodeLocation location;
+    	
+    	@Override
+    	public CodeLocation getLocation() {
+    		return this.location;
+    	}
+    	
+    	@Override
+    	public void setLocation(CodeLocation location) {
+    		this.location = location;
+    	}
     	
     	protected ElementDOMImpl(Element e, boolean inlinePriority) {
     		this.elem = e;

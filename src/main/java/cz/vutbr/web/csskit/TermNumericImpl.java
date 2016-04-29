@@ -1,5 +1,6 @@
 package cz.vutbr.web.csskit;
 
+import cz.vutbr.web.css.CodeLocation;
 import cz.vutbr.web.css.TermNumeric;
 
 public abstract class TermNumericImpl<T extends Number> extends TermImpl<T> implements TermNumeric<T> {
@@ -13,6 +14,16 @@ public abstract class TermNumericImpl<T extends Number> extends TermImpl<T> impl
 		return unit;
 	}
 
+    protected CodeLocation location;
+	
+	public CodeLocation getLocation() {
+		return location;
+	}
+
+	public void setLocation(CodeLocation location) {
+		this.location = location;
+	}
+	
 	/**
 	 * @param unit the unit to set
 	 */

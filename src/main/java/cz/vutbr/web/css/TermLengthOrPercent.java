@@ -15,4 +15,7 @@ public interface TermLengthOrPercent extends TermFloatValue
     
     public boolean isPercentage();
 
+	public void setLocation(CodeLocation location);
+    
+    public CodeLocation getLocation();
 }

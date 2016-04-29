@@ -1,6 +1,7 @@
 package cz.vutbr.web.csskit;
 
 import cz.vutbr.web.css.CSSNodeVisitor;
+import cz.vutbr.web.css.CodeLocation;
 import cz.vutbr.web.css.Term;
 
 /**
@@ -12,6 +13,15 @@ public class TermImpl<T> implements Term<T> {
 
 	protected T value;
 	protected Operator operator = null;
+	protected CodeLocation location;
+	
+	public CodeLocation getLocation() {
+		return location;
+	}
+
+	public void setLocation(CodeLocation location) {
+		this.location = location;
+	}
 	
 	/**
 	 * Accept method required by the visitor pattern for traversing the CSS Tree. 

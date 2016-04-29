@@ -77,4 +77,8 @@ public interface Term<T> extends Cloneable {
 	 * 	The current CSS Object
 	 */
 	public Object accept(CSSNodeVisitor visitor);
+	
+	public void setLocation(CodeLocation location);
+    
+    public CodeLocation getLocation();
 }

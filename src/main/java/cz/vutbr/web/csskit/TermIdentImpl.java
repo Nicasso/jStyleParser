@@ -3,6 +3,7 @@ package cz.vutbr.web.csskit;
 import org.unbescape.css.CssEscape;
 
 import cz.vutbr.web.css.CSSNodeVisitor;
+import cz.vutbr.web.css.CodeLocation;
 import cz.vutbr.web.css.TermIdent;
 
 /**
@@ -36,5 +37,15 @@ public class TermIdentImpl extends TermImpl<String> implements TermIdent {
 
         return sb.toString();
     }
+    
+    protected CodeLocation location;
+	
+	public CodeLocation getLocation() {
+		return location;
+	}
+
+	public void setLocation(CodeLocation location) {
+		this.location = location;
+	}
     
 }

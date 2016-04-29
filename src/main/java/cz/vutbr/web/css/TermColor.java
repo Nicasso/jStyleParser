@@ -12,5 +12,7 @@ public interface TermColor extends Term<Color> {
 	public String getOriginalFormat();
 
 	public void setOriginalFormat(String originalFormat);
-	
+	public void setLocation(CodeLocation location);
+    
+    public CodeLocation getLocation();
 }

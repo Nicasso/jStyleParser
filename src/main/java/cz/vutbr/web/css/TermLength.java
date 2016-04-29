@@ -7,5 +7,7 @@ package cz.vutbr.web.css;
  *
  */
 public interface TermLength extends TermLengthOrPercent {
-
+	public void setLocation(CodeLocation location);
+    
+    public CodeLocation getLocation();
 }
