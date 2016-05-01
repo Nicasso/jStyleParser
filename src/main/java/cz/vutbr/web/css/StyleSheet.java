@@ -1,5 +1,8 @@
 package cz.vutbr.web.css;
 
+import java.util.List;
+
+import cz.vutbr.web.csskit.CSSError;
 
 /**
  * Acts as collection of Rules. Remembers last priority used 
@@ -37,4 +40,7 @@ public interface StyleSheet extends Rule<RuleBlock<?>>{
     
     public CodeLocation getLocation();
     public void setLocation(CodeLocation location);
+    
+    public List<CSSError> getCSSErrors();
+    public void setCSSErrors(List<CSSError> errors);
 }

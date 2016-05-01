@@ -1,5 +1,7 @@
 package cz.vutbr.web.csskit;
 
+import java.util.List;
+
 import cz.vutbr.web.css.CSSComment;
 import cz.vutbr.web.css.CSSNodeVisitor;
 import cz.vutbr.web.css.CodeLocation;
@@ -19,6 +21,7 @@ public class StyleSheetImpl extends AbstractRule<RuleBlock<?>> implements StyleS
     private CSSComment comment;
     private String name;
     private CodeLocation location;
+    private List<CSSError> errors;
 	
 	public CodeLocation getLocation() {
 		return this.location;
@@ -87,6 +90,16 @@ public class StyleSheetImpl extends AbstractRule<RuleBlock<?>> implements StyleS
 	@Override
 	public void setName(String name) {
 		this.name = name;		
+	}
+
+	@Override
+	public List<CSSError> getCSSErrors() {
+		return errors;
+	}
+
+	@Override
+	public void setCSSErrors(List<CSSError> errors) {
+		this.errors = errors;
 	}
    
 	

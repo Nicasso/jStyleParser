@@ -1,21 +1,43 @@
 package cz.vutbr.web.csskit.antlr4;
 
-import cz.vutbr.web.css.*;
-import cz.vutbr.web.csskit.CommentImpl;
-import cz.vutbr.web.csskit.RuleArrayList;
-import cz.vutbr.web.csskit.TermColorImpl;
-import cz.vutbr.web.csskit.antlr4.CSSParser.CommentContext;
-
-import org.antlr.v4.runtime.CommonToken;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.tree.*;
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 import java.util.stream.Collectors;
+
+import org.antlr.v4.runtime.CommonToken;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.tree.ErrorNode;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
+import org.antlr.v4.runtime.tree.TerminalNodeImpl;
+
+import cz.vutbr.web.css.CSSComment;
+import cz.vutbr.web.css.CSSFactory;
+import cz.vutbr.web.css.CodeLocation;
+import cz.vutbr.web.css.CombinedSelector;
+import cz.vutbr.web.css.Declaration;
+import cz.vutbr.web.css.MediaExpression;
+import cz.vutbr.web.css.MediaQuery;
+import cz.vutbr.web.css.RuleBlock;
+import cz.vutbr.web.css.RuleFactory;
+import cz.vutbr.web.css.RuleList;
+import cz.vutbr.web.css.RuleMargin;
+import cz.vutbr.web.css.RuleSet;
+import cz.vutbr.web.css.Selector;
+import cz.vutbr.web.css.Term;
+import cz.vutbr.web.css.TermColor;
+import cz.vutbr.web.css.TermFactory;
+import cz.vutbr.web.css.TermFunction;
+import cz.vutbr.web.css.TermIdent;
+import cz.vutbr.web.css.TermString;
+import cz.vutbr.web.csskit.CSSError;
+import cz.vutbr.web.csskit.CommentImpl;
+import cz.vutbr.web.csskit.RuleArrayList;
+import cz.vutbr.web.csskit.TermColorImpl;
+import cz.vutbr.web.csskit.antlr4.CSSParser.CommentContext;
 
 
 public class CSSParserListenerImpl implements CSSParserListener {
@@ -59,6 +81,8 @@ public class CSSParserListenerImpl implements CSSParserListener {
     private CSSComment tmpStyleSheetComment;
     private CSSComment tmpDeclarationComment;
     private CSSComment tmpStatementComment;
+    
+    private List<CSSError> errorList;
 
     private Stack<terms_scope> terms_stack = new Stack<>();
     private List<cz.vutbr.web.css.Term<?>> tmpTermList;
@@ -171,6 +195,11 @@ public class CSSParserListenerImpl implements CSSParserListener {
     public CSSParserListenerImpl(Preparator preparator, List<MediaQuery> wrapMedia) {
         this.preparator = preparator;
         this.wrapMedia = wrapMedia;
+        this.errorList = new ArrayList<CSSError>();
+    }
+    
+    private void addCSSError(ParserRuleContext ctx, String message) {
+		errorList.add(new CSSError(getCodeLocation(ctx, 0), message));
     }
 
     //used in parseMediaQuery
@@ -201,6 +230,10 @@ public class CSSParserListenerImpl implements CSSParserListener {
      */
     public RuleList getRules() {
         return rules;
+    }
+    
+    public List<CSSError> getErrorList() {
+    	return errorList;
     }
     
     public CSSComment getStyleSheetComment() {
@@ -359,8 +392,11 @@ public class CSSParserListenerImpl implements CSSParserListener {
     public void enterDeclaration(CSSParser.DeclarationContext ctx) {
         logEnter("declaration: " + ctx.getText());
         tmpDeclarationScope = getDeclarationScopeAndInit();
+        
         if (ctxHasErrorNode(ctx) || ctx.noprop() != null) {
+        	
             log.debug("invalidating declaration");
+            addCSSError(ctx, "invalidating declaration");
             tmpDeclarationScope.invalid = true;
         }
     }
@@ -394,6 +430,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
     public void enterImportant(CSSParser.ImportantContext ctx) {
         if (ctxHasErrorNode(ctx)) {
             tmpDeclarationScope.invalid = true;
+            addCSSError(ctx, "important error");
         } else {
             tmpDeclarationScope.d.setImportant(true);
             log.debug("Setting property to IMPORTANT");
@@ -863,6 +900,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
     public void enterPseudo(CSSParser.PseudoContext ctx) {
         if (ctxHasErrorNode(ctx)) {
             stmtIsValid = false;
+            addCSSError(ctx, "pseudo error");
         }
         logEnter("pseudo: " + ctx.getText());
         // childcount == 2
@@ -1011,6 +1049,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
         log.debug("exit atstatement: " + ctx.getText());
         if (ctxHasErrorNode(ctx)) {
             log.debug("atstatement is not valid ");
+            addCSSError(ctx, "atstatement is not valid");
             return;
         }
         if (ctx.CHARSET() != null) {
@@ -1253,6 +1292,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
             tmpMediaExpression.replaceAll(tmpDeclarationScope.d);
         }
         if (ctxHasErrorNode(ctx)) {
+        	addCSSError(ctx, "media_expression is invalid");
             log.debug("media_expression is invalid");
             tmpMediaQueryScope.invalid = true;
         }
