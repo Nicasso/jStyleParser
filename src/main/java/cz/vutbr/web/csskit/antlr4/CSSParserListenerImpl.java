@@ -541,6 +541,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
                     if (term instanceof TermString) {
                         log.debug("creating url");
                         terms_stack.peek().term = tf.createURI(extractTextUnescaped(((TermString) term).getValue()), extractBase(ctx.FUNCTION()));
+                        terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
                     } else
                         tmpDeclarationScope.invalid = true;
                 }
@@ -551,6 +552,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
             	TermColor color =  TermColorImpl.getColorByFunction(function);
 //            	color.setOriginalFormat(ctx.getText());
             	terms_stack.peek().term = color;
+            	terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
             } else if (fname.equalsIgnoreCase("rgba(")) {
             	TermFunction function = tf.createFunction();
             	function.setFunctionName("rgba");
@@ -558,6 +560,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
             	TermColor color =  TermColorImpl.getColorByFunction(function);
 //            	color.setOriginalFormat(ctx.getText());
             	terms_stack.peek().term = color;
+            	terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
             } else {
                 TermFunction function = tf.createFunction();
                 //log.debug("function name to " + fname);
@@ -569,11 +572,12 @@ public class CSSParserListenerImpl implements CSSParserListener {
                     function.setValue(tmpTermList);
                 }
                 terms_stack.peek().term = function;
+                terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
                 log.debug("Setting function: {}", function.toString());
 
             }
             
-            terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
+            
             //function
         }
         logLeave("funct");
@@ -648,9 +652,11 @@ public class CSSParserListenerImpl implements CSSParserListener {
             TermColor termColor = null;
             if (terms_stack.peek().term instanceof TermIdent) { // red
                 termColor = tf.createColor((TermIdent) terms_stack.peek().term);
+                termColor.setLocation(getCodeLocation(ctx, 0));
 //                termColor.setOriginalFormat(ctx.getText());
             } else if (terms_stack.peek().term instanceof TermFunction) { // rgba(0,0,0)
                 termColor = tf.createColor((TermFunction) terms_stack.peek().term);
+                termColor.setLocation(getCodeLocation(ctx, 0));
 //                termColor.setOriginalFormat(ctx.getText());
             }
             if (termColor != null) {
@@ -743,6 +749,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
     public void enterSelectorWithIdOrAsterisk(CSSParser.SelectorWithIdOrAsteriskContext ctx) {
         enterSelector();
         Selector.ElementName en = rf.createElement(extractTextUnescaped(ctx.getChild(0).getText()));
+        en.setLocation(getCodeLocation(ctx, 0));
         log.debug("Adding selector: {}", en.getName());
         tmpSelector.add(en);
     }

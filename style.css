@@ -1,5 +1,6 @@
 .lal  {
   /* BG INFO */
-  background: #A41516 !important; 
+  background: #A41516 !important;
   /* GA NOU NIET STUK KUT DING */
+  width: calc(100% - 80px);
 }
