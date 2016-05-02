@@ -231,7 +231,7 @@ ruleset
 	}
 
 declarations
-	: declaration? (SEMICOLON S* declaration? )*
+	: declaration? (SEMICOLON S* declaration?)* (S | comment)*
 	  //-> ^(SET declaration*)
 	;
     catch [RecognitionException re] {
@@ -244,8 +244,8 @@ declaration
       CSSLexerState begin = getCurrentLexerState(_localctx.getStart());
       log.debug("Decl begin: " + begin);
     }
-	: (S | comment)* property COLON S* terms? important? (S | comment)* //-> ^(DECLARATION important? property terms?)
-	| (S | comment)* noprop any* (S | comment)* //-> INVALID_DECLARATION /* if first character in the declaration is invalid (various dirty hacks) */
+	: (S | comment)* property COLON S* terms? important? S* //-> ^(DECLARATION important? property terms?)
+	| (S | comment)* noprop any* S* //-> INVALID_DECLARATION /* if first character in the declaration is invalid (various dirty hacks) */
 	;
 	catch [RecognitionException re] {
         log.error("PARSING declaration ERROR | consume until SEMICOLON, RCURLY");
@@ -311,6 +311,9 @@ term
     ;
     catch [RecognitionException re] {
       log.error("PARSING term ERROR | should be empty");
+      IntervalSet intervalSet = new IntervalSet(RCURLY,SEMICOLON);
+      this.getCSSErrorHandler().consumeUntil(this,intervalSet);
+      _localctx.addErrorNode(this.getTokenFactory().create(INVALID_STATEMENT,""));
     }
 
 /** other functions than expression */
@@ -340,7 +343,7 @@ valuepart
       | HASH //-> HASH
       | UNIRANGE //-> UNIRANGE
       | INCLUDES //-> INCLUDES
-      | COLON //-> COLON
+      //| COLON //-> COLON
       | COMMA //-> COMMA
       | GREATER //-> GREATER
       | LESS //-> LESS

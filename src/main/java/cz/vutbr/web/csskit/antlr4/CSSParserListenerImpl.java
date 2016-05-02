@@ -394,7 +394,6 @@ public class CSSParserListenerImpl implements CSSParserListener {
         tmpDeclarationScope = getDeclarationScopeAndInit();
         
         if (ctxHasErrorNode(ctx) || ctx.noprop() != null) {
-        	
             log.debug("invalidating declaration");
             addCSSError(ctx, "Syntax error: "+ctx.getText());
             tmpDeclarationScope.invalid = true;
@@ -473,6 +472,12 @@ public class CSSParserListenerImpl implements CSSParserListener {
         terms_stack.peek().op = null;
         terms_stack.peek().unary = 1;
         terms_stack.peek().dash = false;
+        
+        if (ctxHasErrorNode(ctx)) {
+            log.debug("invalidating terms");
+            addCSSError(ctx, "Syntax error: "+ctx.getText());
+            tmpDeclarationScope.invalid = true;
+        }
     }
 
     @Override
@@ -1386,6 +1391,16 @@ public class CSSParserListenerImpl implements CSSParserListener {
 //		}
 		
 		length = ctx.getText().trim().length();
+		if (length == 0) {
+			return new CodeLocation(
+					offset,
+					length,
+					0, 
+					0, 
+					0, 
+					0
+			);
+		}
 		//length = realLength;
 		
 		int startLine = ctx.getStart().getLine();
