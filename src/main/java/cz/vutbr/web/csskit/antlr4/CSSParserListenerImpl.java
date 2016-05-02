@@ -396,7 +396,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
         if (ctxHasErrorNode(ctx) || ctx.noprop() != null) {
         	
             log.debug("invalidating declaration");
-            addCSSError(ctx, "invalidating declaration");
+            addCSSError(ctx, "Syntax error: "+ctx.getText());
             tmpDeclarationScope.invalid = true;
         }
     }
@@ -430,7 +430,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
     public void enterImportant(CSSParser.ImportantContext ctx) {
         if (ctxHasErrorNode(ctx)) {
             tmpDeclarationScope.invalid = true;
-            addCSSError(ctx, "important error");
+            addCSSError(ctx, "Syntax error: "+ctx.getText());
         } else {
             tmpDeclarationScope.d.setImportant(true);
             log.debug("Setting property to IMPORTANT");
@@ -590,24 +590,29 @@ public class CSSParserListenerImpl implements CSSParserListener {
             //string
             log.debug("VP - string");
             terms_stack.peek().term = tf.createString(extractTextUnescaped(ctx.string().getText()));
+            terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
         } else if (ctx.IDENT() != null) {
             log.debug("VP - ident");
             terms_stack.peek().term = tf.createIdent(extractTextUnescaped(ctx.IDENT().getText()), terms_stack.peek().dash);
+            terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
         } else if (ctx.HASH() != null) {
             log.debug("VP - hash");
              TermColor color = tf.createColor(ctx.HASH().getText());
 //             color.setOriginalFormat(ctx.getText());
              terms_stack.peek().term = color;
+             terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
             if(terms_stack.peek().term == null){
                 tmpDeclarationScope.invalid = true;
             }
         } else if (ctx.PERCENTAGE() != null) {
             log.debug("VP - percentage");
             terms_stack.peek().term = tf.createPercent(ctx.PERCENTAGE().getText(), terms_stack.peek().unary);
+            terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
         } else if (ctx.DIMENSION() != null) {
             log.debug("VP - dimension");
             String dim = ctx.DIMENSION().getText();
             terms_stack.peek().term = tf.createDimension(dim, terms_stack.peek().unary);
+            terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
             if(terms_stack.peek().term  == null){
                 log.info("Unable to create dimension from {}, unary {}", dim, terms_stack.peek().unary);
                 tmpDeclarationScope.invalid = true;
@@ -615,9 +620,11 @@ public class CSSParserListenerImpl implements CSSParserListener {
         } else if (ctx.NUMBER() != null) {
             log.debug("VP - number");
             terms_stack.peek().term = tf.createNumeric(ctx.NUMBER().getText(), terms_stack.peek().unary);
+            terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
         } else if (ctx.URI() != null) {
             log.debug("VP - uri");
             terms_stack.peek().term = tf.createURI(extractTextUnescaped(ctx.URI().getText()),extractBase(ctx.URI()));
+            terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
         } else if (ctx.funct() != null) {
             terms_stack.peek().term = null;
             //served in function
@@ -627,9 +634,6 @@ public class CSSParserListenerImpl implements CSSParserListener {
             terms_stack.peek().term = null;
             tmpDeclarationScope.invalid = true;
         }
-        
-        terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
-
     }
 
     @Override
@@ -900,7 +904,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
     public void enterPseudo(CSSParser.PseudoContext ctx) {
         if (ctxHasErrorNode(ctx)) {
             stmtIsValid = false;
-            addCSSError(ctx, "pseudo error");
+            addCSSError(ctx, "Syntax error: "+ctx.getText());
         }
         logEnter("pseudo: " + ctx.getText());
         // childcount == 2
@@ -1049,7 +1053,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
         log.debug("exit atstatement: " + ctx.getText());
         if (ctxHasErrorNode(ctx)) {
             log.debug("atstatement is not valid ");
-            addCSSError(ctx, "atstatement is not valid");
+            addCSSError(ctx, "Syntax error: "+ctx.getText());
             return;
         }
         if (ctx.CHARSET() != null) {
@@ -1292,7 +1296,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
             tmpMediaExpression.replaceAll(tmpDeclarationScope.d);
         }
         if (ctxHasErrorNode(ctx)) {
-        	addCSSError(ctx, "media_expression is invalid");
+        	addCSSError(ctx, "Syntax error: "+ctx.getText());
             log.debug("media_expression is invalid");
             tmpMediaQueryScope.invalid = true;
         }

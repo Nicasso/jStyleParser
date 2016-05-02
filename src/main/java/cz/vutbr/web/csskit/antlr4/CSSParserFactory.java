@@ -152,8 +152,6 @@ public class CSSParserFactory {
         
         sheet.setCSSErrors(extractor.getErrorList());
         
-        //sheet.set
-        
         sheet.setLocation(extractor.getStyleSheetLocation());
         
         String[] paths = source.toString().split("\\/");

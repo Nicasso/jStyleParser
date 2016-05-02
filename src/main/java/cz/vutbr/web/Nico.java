@@ -59,14 +59,16 @@ public class Nico {
 
     if (file == null) {
       try {
-        // style = CSSFactory.parse(new
-        // URL("http://nicasso.nl/assets/css/style.css"), "UTF-8");
         style = CSSFactory.parse("style.css", "UTF-8");
-        if(style.getComment() != null) {
+        if (style.getComment() != null) {
 	        System.out.println("Stylesheet comment: "+style.getComment().getText());
 	        System.out.println("Stylesheet comment location: "+style.getComment().getLocation().toString());
         }
-        
+        System.out.println("----------------------------");
+        System.out.println("ERRORS: "+style.getCSSErrors().size());
+        for (int i = 0; i < style.getCSSErrors().size(); i++) {
+    		System.out.println(style.getCSSErrors().get(i).getMessage() + " - " + style.getCSSErrors().get(i).getLocation().toString());	
+        }
         rulesBlock(style);
       } catch (CSSException | IOException e) {
         // TODO Auto-generated catch block
@@ -88,12 +90,11 @@ public class Nico {
 	System.out.println("Collection<RuleBlock<?>>");
     for (RuleBlock<?> ruleBlock : rules) {
     	
-    	if (ruleBlock.getComment() != null) {
-    		System.out.println("");
-    		System.out.println("ruleBlock comment: "+ruleBlock.getComment().getText());
-    		System.out.println("ruleBlock comment location: "+ruleBlock.getComment().getLocation().toString());
-    	}
-    	
+		if (ruleBlock.getComment() != null) {
+			System.out.println("");
+			System.out.println("ruleBlock comment: "+ruleBlock.getComment().getText());
+			System.out.println("ruleBlock comment location: "+ruleBlock.getComment().getLocation().toString());
+		}
     	
       if (ruleBlock instanceof RuleSet) {
     	  System.out.println("");

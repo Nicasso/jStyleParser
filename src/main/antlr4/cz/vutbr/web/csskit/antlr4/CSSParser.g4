@@ -97,7 +97,7 @@ atstatement
         log.error("Recognition exception | atstatement consume until RCURLY | SEMICOLON");
         IntervalSet intervalSet = new IntervalSet(RCURLY,SEMICOLON);
         getCSSErrorHandler().consumeUntil(this,intervalSet);
-        _localctx.addErrorNode(this.getTokenFactory().create(INVALID_ATSTATEMENT,"INVALID_ATSTATEMENT"));
+        _localctx.addErrorNode(this.getTokenFactory().create(INVALID_ATSTATEMENT,""));
      }
 
 import_uri
@@ -154,7 +154,7 @@ media
         log.error("PARSING MEDIA ERROR | consume until COMMA, LCURLY, SEMICOLON");
         IntervalSet intervalSet = new IntervalSet(COMMA, LCURLY,SEMICOLON);
         getCSSErrorHandler().consumeUntil(this,intervalSet);
-        _localctx.addErrorNode(this.getTokenFactory().create(INVALID_STATEMENT,"INVALID_STATEMENT"));
+        _localctx.addErrorNode(this.getTokenFactory().create(INVALID_STATEMENT,""));
         //     final BitSet follow = BitSet.of(COMMA, LCURLY, SEMICOLON);
         //     retval.tree = tnr.invalidFallback(INVALID_STATEMENT, "INVALID_STATEMENT", follow, cz.vutbr.web.csskit.antlr.CSSLexerState.RecoveryMode.BALANCED, null, re);
     }
@@ -174,7 +174,7 @@ media_term
         log.error("PARSING MEDIATERM ERROR | consume until COMMA, LCURLY, SEMICOLON");
         IntervalSet intervalSet = new IntervalSet(COMMA, LCURLY,SEMICOLON);
         getCSSErrorHandler().consumeUntil(this,intervalSet);
-        _localctx.addErrorNode(this.getTokenFactory().create(INVALID_STATEMENT,"INVALID_STATEMENT"));
+        _localctx.addErrorNode(this.getTokenFactory().create(INVALID_STATEMENT,""));
         //     final BitSet follow = BitSet.of(COMMA, LCURLY, SEMICOLON);
         //     retval.tree = tnr.invalidFallback(INVALID_STATEMENT, "INVALID_STATEMENT", follow, cz.vutbr.web.csskit.antlr.CSSLexerState.RecoveryMode.RULE, null, re);
     }
@@ -187,7 +187,7 @@ media_expression
         log.error("PARSING meida_expression ERROR | consume until RPAREN, SEMICOLON");
         IntervalSet intervalSet = new IntervalSet(RPAREN, SEMICOLON);
         getCSSErrorHandler().consumeUntilGreedy(this,intervalSet);
-        _localctx.addErrorNode(this.getTokenFactory().create(INVALID_STATEMENT,"INVALID_STATEMENT"));
+        _localctx.addErrorNode(this.getTokenFactory().create(INVALID_STATEMENT,""));
         //		 final BitSet follow = BitSet.of(RPAREN, SEMICOLON);
         //		 retval.tree = tnr.invalidFallbackGreedy(INVALID_STATEMENT, "INVALID_STATEMENT", follow, re);
     }
@@ -206,8 +206,8 @@ unknown_atrule
     catch [RecognitionException re] {
         log.error("PARSING unknown_atrule ERROR - consume until RCURLY");
         IntervalSet intervalSet = new IntervalSet(RCURLY);
-        getCSSErrorHandler().consumeUntilGreedy(this,intervalSet,CSSLexerState.RecoveryMode.BALANCED);
-        _localctx.addErrorNode(this.getTokenFactory().create(INVALID_ATSTATEMENT,"INVALID_ATSTATEMENT"));
+        getCSSErrorHandler().consumeUntilGreedy(this,intervalSet);//,CSSLexerState.RecoveryMode.BALANCED);
+        _localctx.addErrorNode(this.getTokenFactory().create(INVALID_ATSTATEMENT,""));
     //     final BitSet follow = BitSet.of(RCURLY);
     //     retval.tree = tnr.invalidFallbackGreedy(INVALID_ATSTATEMENT,"INVALID_ATSTATEMENT", follow, cz.vutbr.web.csskit.antlr.CSSLexerState.RecoveryMode.BALANCED, null, re);
     }
@@ -224,7 +224,7 @@ ruleset
 	    log.debug("PARSING ruleset ERROR | consume until RCURLY and add INVALID_STATEMENT");
         IntervalSet intervalSet = new IntervalSet(RCURLY);
         getCSSErrorHandler().consumeUntilGreedy(this,intervalSet);
-        _localctx.addErrorNode(this.getTokenFactory().create(INVALID_STATEMENT,"INVALID_STATEMENT"));
+        _localctx.addErrorNode(this.getTokenFactory().create(INVALID_STATEMENT,""));
         //final BitSet follow = BitSet.of(RCURLY);
         //we don't require {} to be balanced here because of possible parent 'media' sections that may remain open => RecoveryMode.RULE
         //	    retval.tree = tnr.invalidFallbackGreedy(INVALID_STATEMENT,	"INVALID_STATEMENT", follow, cz.vutbr.web.csskit.antlr.CSSLexerState.RecoveryMode.RULE, null, re);
@@ -251,8 +251,8 @@ declaration
         log.error("PARSING declaration ERROR | consume until SEMICOLON, RCURLY");
         IntervalSet follow = new IntervalSet(SEMICOLON,RCURLY); //recover on the declaration end or rule end
         //not greedy - the final ; or } must remain for properly finishing the declaration/rule
-        this.getCSSErrorHandler().consumeUntil(this,follow,CSSLexerState.RecoveryMode.DECL, begin, re);
-        _localctx.addErrorNode(this.getTokenFactory().create(INVALID_DECLARATION,"INVALID_DECLARATION"));
+        this.getCSSErrorHandler().consumeUntil(this,follow);//,CSSLexerState.RecoveryMode.DECL, begin, re);
+        _localctx.addErrorNode(this.getTokenFactory().create(INVALID_DECLARATION,""));
 //      final BitSet follow = BitSet.of(SEMICOLON, RCURLY); //recover on the declaration end or rule end
       //not greedy - the final ; or } must remain for properly finishing the declaration/rule
 //      retval.tree = tnr.invalidFallback(INVALID_DECLARATION, "INVALID_DECLARATION", follow, cz.vutbr.web.csskit.antlr.CSSLexerState.RecoveryMode.DECL, begin, re);
@@ -265,7 +265,7 @@ important
         log.error("PARSING IMPORTANT");
         IntervalSet intervalSet = new IntervalSet(RCURLY,SEMICOLON);
         this.getCSSErrorHandler().consumeUntil(this,intervalSet);
-        _localctx.addErrorNode(this.getTokenFactory().create(INVALID_DIRECTIVE,"INVALID_DIRECTIVE"));
+        _localctx.addErrorNode(this.getTokenFactory().create(INVALID_DIRECTIVE,""));
 //      final BitSet follow = BitSet.of(RCURLY, SEMICOLON);
 //      retval.tree = tnr.invalidFallback(INVALID_DIRECTIVE, "INVALID_DIRECTIVE", follow, cz.vutbr.web.csskit.antlr.CSSLexerState.RecoveryMode.RULE, null, re);
     }
@@ -287,7 +287,7 @@ terms
         if (functLevel == 0){
             IntervalSet intervalSet = new IntervalSet(RCURLY,SEMICOLON);
             this.getCSSErrorHandler().consumeUntilGreedy(this,intervalSet);
-            _localctx.addErrorNode(this.getTokenFactory().create(INVALID_STATEMENT,"INVALID_STATEMENT"));
+            _localctx.addErrorNode(this.getTokenFactory().create(INVALID_STATEMENT,""));
             /*
             final BitSet follow = BitSet.of(RCURLY, SEMICOLON);
             retval.tree = tnr.invalidFallbackGreedy(INVALID_STATEMENT,"INVALID_STATEMENT", follow, re);
@@ -296,7 +296,7 @@ terms
         else{
             IntervalSet intervalSet = new IntervalSet(RPAREN,RCURLY,SEMICOLON);
             this.getCSSErrorHandler().consumeUntilGreedy(this,intervalSet);
-            _localctx.addErrorNode(this.getTokenFactory().create(INVALID_STATEMENT,"INVALID_STATEMENT"));
+            _localctx.addErrorNode(this.getTokenFactory().create(INVALID_STATEMENT,""));
             /*
             final BitSet follow = BitSet.of(RPAREN, RCURLY, SEMICOLON);
             retval.tree = tnr.invalidFallbackGreedy(INVALID_STATEMENT, "INVALID_STATEMENT", follow, cz.vutbr.web.csskit.antlr.CSSLexerState.RecoveryMode.FUNCTION, null, re);
@@ -390,7 +390,7 @@ selector
     ;
     catch [RecognitionException re] {
         log.error("PARSING selector ERROR | inserting INVALID_SELECTOR");
-        _localctx.addErrorNode(this.getTokenFactory().create(INVALID_SELECTOR,"INVALID_SELECTOR"));
+        _localctx.addErrorNode(this.getTokenFactory().create(INVALID_SELECTOR,""));
 //      retval.tree = tnr.invalidFallback(INVALID_SELECTOR, "INVALID_SELECTOR", re);
 	  }
 
@@ -403,7 +403,7 @@ selpart
     ;
     catch [RecognitionException re] {
         log.error("PARSING SELPART ERROR");
-        _localctx.addErrorNode(this.getTokenFactory().create(INVALID_SELPART,"INVALID_SELPART"));
+        _localctx.addErrorNode(this.getTokenFactory().create(INVALID_SELPART,""));
 //      retval.tree = tnr.invalidFallback(INVALID_SELPART, "INVALID_SELPART", re);
 	  }
 
@@ -421,7 +421,7 @@ pseudo
 	;
     catch [RecognitionException re] {
       log.error("PARSING pseudo ERROR | inserting INVALID_SELPART");
-       _localctx.addErrorNode(this.getTokenFactory().create(INVALID_SELPART,"INVALID_SELPART"));
+       _localctx.addErrorNode(this.getTokenFactory().create(INVALID_SELPART,""));
     //     retval.tree = tnr.invalidFallback(INVALID_SELPART, "INVALID_SELPART", re);
     }
 
