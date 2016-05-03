@@ -944,6 +944,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
                 log.error("pseudo element cannot be used as a function");
                 tmpPseudo = null;
             } else {
+            	System.out.println("TOTAL: "+ctx.getText());
                 //function
                 //var first is function name
                 String value = "";
@@ -957,6 +958,8 @@ public class CSSParserListenerImpl implements CSSParserListener {
                         value += ctx.NUMBER().getText();
                     } else if (ctx.INDEX() != null) {
                         value += ctx.INDEX().getText();
+                    } else if (ctx.selector() != null) {
+                    	value += ctx.selector().getText();
                     } else {
                         throw new UnsupportedOperationException("unknown state");
                     }

@@ -61,13 +61,13 @@ public class Nico {
       try {
         style = CSSFactory.parse("style.css", "UTF-8");
         if (style.getComment() != null) {
-	        //System.out.println("Stylesheet comment: "+style.getComment().getText());
-	        //System.out.println("Stylesheet comment location: "+style.getComment().getLocation().toString());
+	        System.out.println("Stylesheet comment: "+style.getComment().getText());
+	        System.out.println("Stylesheet comment location: "+style.getComment().getLocation().toString());
         }
-        //System.out.println("----------------------------");
-        //System.out.println("ERRORS: "+style.getCSSErrors().size());
+        System.out.println("----------------------------");
+        System.out.println("ERRORS: "+style.getCSSErrors().size());
         for (int i = 0; i < style.getCSSErrors().size(); i++) {
-    		//System.out.println(style.getCSSErrors().get(i).getMessage() + " - " + style.getCSSErrors().get(i).getLocation().toString());	
+    		System.out.println(style.getCSSErrors().get(i).getMessage() + " - " + style.getCSSErrors().get(i).getLocation().toString());	
         }
         rulesBlock(style);
       } catch (CSSException | IOException e) {
@@ -87,75 +87,75 @@ public class Nico {
   }
 
   private void rulesBlock(Collection<RuleBlock<?>> rules) {
-	//System.out.println("Collection<RuleBlock<?>>");
+	System.out.println("Collection<RuleBlock<?>>");
     for (RuleBlock<?> ruleBlock : rules) {
     	
 		if (ruleBlock.getComment() != null) {
-			//System.out.println("");
-			//System.out.println("ruleBlock comment: "+ruleBlock.getComment().getText());
-			//System.out.println("ruleBlock comment location: "+ruleBlock.getComment().getLocation().toString());
+			System.out.println("");
+			System.out.println("ruleBlock comment: "+ruleBlock.getComment().getText());
+			System.out.println("ruleBlock comment location: "+ruleBlock.getComment().getLocation().toString());
 		}
     	
       if (ruleBlock instanceof RuleSet) {
-    	  //System.out.println("");
-    	  //System.out.println("RULE: "+ruleBlock.getLocation().toString());
+    	  System.out.println("");
+    	  System.out.println("RULE: "+ruleBlock.getLocation().toString());
         ruleSet(ruleBlock);
       } else if (ruleBlock instanceof RuleMedia) {
-    	  //System.out.println("");
-    	  //System.out.println("RULE: "+ruleBlock.getLocation().toString());
+    	  System.out.println("");
+    	  System.out.println("RULE: "+ruleBlock.getLocation().toString());
         ruleMedia(ruleBlock);
       } else if (ruleBlock instanceof RuleFontFace) {
-    	  //System.out.println("");
-    	  //System.out.println("RULE: "+ruleBlock.getLocation().toString());
+    	  System.out.println("");
+    	  System.out.println("RULE: "+ruleBlock.getLocation().toString());
         ruleFontFace(ruleBlock);
       } else if (ruleBlock instanceof RuleMargin) {
-    	  //System.out.println("");
-    	  //System.out.println("RULE: "+ruleBlock.getLocation().toString());
+    	  System.out.println("");
+    	  System.out.println("RULE: "+ruleBlock.getLocation().toString());
         ruleMargin(ruleBlock);
       } else if (ruleBlock instanceof RulePage) {
-    	  //System.out.println("");
-    	  //System.out.println("RULE: "+ruleBlock.getLocation().toString());
+    	  System.out.println("");
+    	  System.out.println("RULE: "+ruleBlock.getLocation().toString());
         rulePage(ruleBlock);
       } else if (ruleBlock instanceof RuleViewport) {
-    	  //System.out.println("");
-    	  //System.out.println("RULE: "+ruleBlock.getLocation().toString());
+    	  System.out.println("");
+    	  System.out.println("RULE: "+ruleBlock.getLocation().toString());
         ruleViewport(ruleBlock);
       } else if (ruleBlock instanceof RuleImport) {
-    	  //System.out.println("");
-    	  //System.out.println("RULE: "+ruleBlock.getLocation().toString());
+    	  System.out.println("");
+    	  System.out.println("RULE: "+ruleBlock.getLocation().toString());
         ruleImport((RuleImport) ruleBlock);
       } else {
-        //System.out.println("This is a exotic block");
+        System.out.println("This is a exotic block");
       }
-      // //System.out.println("");
+      // System.out.println("");
     }
   }
 
   private void ruleSet(RuleBlock<?> ruleBlock) {
-    //System.out.println("");
-    //System.out.println("This is a ruleset");
+    System.out.println("");
+    System.out.println("This is a ruleset");
     RuleSet set = (RuleSet) ruleBlock;
     selectors(set.getSelectors());
 	
-    // //System.out.println("Declarations:");
+    // System.out.println("Declarations:");
     for (Declaration decl : set) {
 		if (decl.getComment() != null) {
-			//System.out.println("Declaration comment: "+decl.getComment().getText());
-			//System.out.println("Declaration comment location: "+decl.getComment().getLocation().toString());
+			System.out.println("Declaration comment: "+decl.getComment().getText());
+			System.out.println("Declaration comment location: "+decl.getComment().getLocation().toString());
 		}
 		
-		//System.out.println("Declaration location: "+decl.getLocation().toString());
+		System.out.println("Declaration location: "+decl.getLocation().toString());
 		
-      //System.out.println(decl.getSource());
-      //System.out.println("  Property: " + decl.getProperty());
-      //System.out.println("  Values: ");
+      System.out.println(decl.getSource());
+      System.out.println("  Property: " + decl.getProperty());
+      System.out.println("  Values: ");
       declarations(decl);
     }
   }
 
   private void ruleMedia(RuleBlock<?> ruleBlock) {
-    //System.out.println("");
-    //System.out.println("This is a ruleMedia");
+    System.out.println("");
+    System.out.println("This is a ruleMedia");
     RuleMedia media = (RuleMedia) ruleBlock;
     mediaQuery(media.getMediaQueries());
     for (RuleSet set : media) {
@@ -165,66 +165,66 @@ public class Nico {
   
   private void mediaQuery(List<MediaQuery> list) {
     for(MediaQuery m : list) {
-      //System.out.println("MEDIAQUERY: "+m.getType()+" - "+m.toString());
+      System.out.println("MEDIAQUERY: "+m.getType()+" - "+m.toString());
       mediaExpression(m);
     }
   }
   
   private void mediaExpression(MediaQuery m) {
     for(MediaExpression a : m) {
-      //System.out.println("MEDIAEXPRESSION: "+a.getFeature() + " - " +a.toString());
+      System.out.println("MEDIAEXPRESSION: "+a.getFeature() + " - " +a.toString());
       mediaTerms(a);
     }
   }
   
   private void mediaTerms(MediaExpression m) {
     for(Term a : m) {
-      //System.out.println("(MEDIA)TERMS: "+a.toString());
+      System.out.println("(MEDIA)TERMS: "+a.toString());
       terms(a);
     }
   }
 
   private void ruleFontFace(RuleBlock<?> ruleBlock) {
-    //System.out.println("");
-    //System.out.println("This is a ruleFontFace");
+    System.out.println("");
+    System.out.println("This is a ruleFontFace");
     RuleFontFace media = (RuleFontFace) ruleBlock;
-    // //System.out.println("FontFace" + media.f);
+    // System.out.println("FontFace" + media.f);
     for (Declaration set : media) {
       declarations(set);
     }
   }
   
   private void ruleImport(RuleImport ruleBlock) {
-	    //System.out.println("");
-	    //System.out.println("This is a ruleImport");
-	    //System.out.println(ruleBlock.getURI());
+	    System.out.println("");
+	    System.out.println("This is a ruleImport");
+	    System.out.println(ruleBlock.getURI());
   }
 
   private void ruleMargin(RuleBlock<?> ruleBlock) {
-    //System.out.println("");
-    //System.out.println("This is a ruleMargin");
+    System.out.println("");
+    System.out.println("This is a ruleMargin");
     RuleMargin media = (RuleMargin) ruleBlock;
-    //System.out.println("MaginAre: " + media.getMarginArea());
+    System.out.println("MaginAre: " + media.getMarginArea());
     for (Declaration set : media) {
       declarations(set);
     }
   }
 
   private void rulePage(RuleBlock<?> ruleBlock) {
-    //System.out.println("");
-    //System.out.println("This is a rulePage");
+    System.out.println("");
+    System.out.println("This is a rulePage");
     RulePage media = (RulePage) ruleBlock;
-    //System.out.println("Name: " + media.getName());
+    System.out.println("Name: " + media.getName());
     for (Rule<?> set : media) {
       rules(set);
     }
   }
 
   private void ruleViewport(RuleBlock<?> ruleBlock) {
-    //System.out.println("");
-    //System.out.println("This is a ruleViewport");
+    System.out.println("");
+    System.out.println("This is a ruleViewport");
     RuleViewport media = (RuleViewport) ruleBlock;
-    // //System.out.println("MaginAre: " + media.getMarginArea());
+    // System.out.println("MaginAre: " + media.getMarginArea());
     for (Declaration set : media) {
       declarations(set);
     }
@@ -232,49 +232,49 @@ public class Nico {
 
   private void realSelectors(CombinedSelector s2) {
     for (Selector s : s2) {
-    	//System.out.println("SELECTOR LOCATION :"+s.getLocation().toString());
+    	System.out.println("SELECTOR LOCATION :"+s.getLocation().toString());
       for (Selector.SelectorPart sp : s) {
-        //System.out.println(sp.toString());
+        System.out.println(sp.toString());
         
         if(sp instanceof ElementClass) {
-          //System.out.println("Class");
-          //System.out.println("Class location:"+((ElementClass) sp).getLocation().toString());
-          //System.out.println(((ElementClass) sp).getClassName());
+          System.out.println("Class");
+          System.out.println("Class location:"+((ElementClass) sp).getLocation().toString());
+          System.out.println(((ElementClass) sp).getClassName());
         } else if (sp instanceof ElementID) {
-          //System.out.println("ID");
-          //System.out.println("Id location:"+((ElementID) sp).getLocation().toString());
-          //System.out.println(((ElementID) sp).getID());
+          System.out.println("ID");
+          System.out.println("Id location:"+((ElementID) sp).getLocation().toString());
+          System.out.println(((ElementID) sp).getID());
         } else if (sp instanceof ElementDOM) {
-          //System.out.println("DOM");
-          //System.out.println(((ElementDOM) sp).getElement().getTagName());
+          System.out.println("DOM");
+          System.out.println(((ElementDOM) sp).getElement().getTagName());
         } else if (sp instanceof ElementAttribute) {
-          //System.out.println("ATTRIBUTE");
-          //System.out.println(((ElementAttribute) sp).getAttribute());
-          //System.out.println(((ElementAttribute) sp).getOperator());
-          //System.out.println(((ElementAttribute) sp).getValue());
+          System.out.println("ATTRIBUTE");
+          System.out.println(((ElementAttribute) sp).getAttribute());
+          System.out.println(((ElementAttribute) sp).getOperator());
+          System.out.println(((ElementAttribute) sp).getValue());
         } else if (sp instanceof ElementName) {
-          //System.out.println("NAME");
-          //System.out.println(((ElementName) sp).getName());
+          System.out.println("NAME");
+          System.out.println(((ElementName) sp).getName());
         } else {
-          //System.out.println("EXOTIC ELEMENT");
+          System.out.println("EXOTIC ELEMENT");
         }
         
-        //System.out.println("COMBINATOR: " + s.getCombinator());
+        System.out.println("COMBINATOR: " + s.getCombinator());
       }
     }
   }
 
   private void mediaExpression(MediaExpression exp) {
-    //System.out.println("mediaExpression: " + exp.getFeature());
+    System.out.println("mediaExpression: " + exp.getFeature());
 
   }
 
   private void mediaQuery(MediaQuery q) {
-    //System.out.println("mediaQuery: " + q.getType());
+    System.out.println("mediaQuery: " + q.getType());
   }
 
   private void rules(Rule<?> rules) {
-    //System.out.println("Rules");
+    System.out.println("Rules");
     for (Object rule : rules) {
       if (rule instanceof CombinedSelector) {
         // realSelectors((Collection<Selector.SelectorPart>) rule);
@@ -301,13 +301,13 @@ public class Nico {
       } else if (rule instanceof StyleSheet) {
         rulesBlock((Collection<RuleBlock<?>>) rule);
       }
-      // //System.out.println("");
+      // System.out.println("");
     }
   }
 
   private void declarations(Declaration decl) {
-    // //System.out.println("Declaration source: "+decl.getSource());
-    //System.out.println("Important? " + decl.isImportant());
+    // System.out.println("Declaration source: "+decl.getSource());
+    System.out.println("Important? " + decl.isImportant());
     for (Term<?> term : decl) {
       terms(term);
     }
@@ -315,56 +315,56 @@ public class Nico {
 
   private void terms(Term<?> term) {
     if (term instanceof TermAngle) {
-      //System.out.println("    Angle: " + term.getValue());
+      System.out.println("    Angle: " + term.getValue());
     } else if (term instanceof TermColor) {
-      //System.out.println("    Color: " +term.toString()+" - "+ term.getValue() + " - " + term.getOperator());
-      //System.out.println(((TermColor) term).getOriginalFormat());
+      System.out.println("    Color: " +term.toString()+" - "+ term.getValue() + " - " + term.getOperator());
+      System.out.println(((TermColor) term).getOriginalFormat());
     } else if (term instanceof TermExpression) {
-      //System.out.println("    Expression: " + term.getValue()); 
+      System.out.println("    Expression: " + term.getValue()); 
     } else if (term instanceof TermFrequency) {
-      //System.out.println("    Frequency: " + term.getValue());
+      System.out.println("    Frequency: " + term.getValue());
     } else if (term instanceof TermFunction) {
-      //System.out.println(((TermFunction) term).getFunctionName());
-	  //System.out.println("    Function: " + term.getValue());
+      System.out.println(((TermFunction) term).getFunctionName());
+	  System.out.println("    Function: " + term.getValue());
     } else if (term instanceof TermIdent) {
-      //System.out.println("    Ident: " + term.getValue());
+      System.out.println("    Ident: " + term.getValue());
     } else if (term instanceof TermInteger) {
-      //System.out.println("    Integer: " + term.getValue());
+      System.out.println("    Integer: " + term.getValue());
     } else if (term instanceof TermLength) {
-      //System.out.println("    Length: " + term.getValue());
+      System.out.println("    Length: " + term.getValue());
     } else if (term instanceof TermLengthOrPercent) {
       TermLengthOrPercent test = (TermLengthOrPercent) term;
-      //System.out.println("    Length or Percent: " + term.getValue() + " - Percent? " + test.isPercentage());
+      System.out.println("    Length or Percent: " + term.getValue() + " - Percent? " + test.isPercentage());
     } else if (term instanceof TermList) {
-      //System.out.println("    List: " + term.getValue());
+      System.out.println("    List: " + term.getValue());
     } else if (term instanceof TermNumber) {
-      //System.out.println("    Number: " + term.getValue());
+      System.out.println("    Number: " + term.getValue());
     } else if (term instanceof TermNumeric) {
-      //System.out.println("    Numeric: " + term.getValue());
+      System.out.println("    Numeric: " + term.getValue());
     } else if (term instanceof TermPair) {
-      //System.out.println("    Pair: " + term.getValue());
+      System.out.println("    Pair: " + term.getValue());
     } else if (term instanceof TermPercent) {
-      //System.out.println("    Percent: " + term.getValue());
+      System.out.println("    Percent: " + term.getValue());
     } else if (term instanceof TermResolution) {
-      //System.out.println("    Resolution: " + term.getValue());
+      System.out.println("    Resolution: " + term.getValue());
     } else if (term instanceof TermString) {
-      //System.out.println("    String: " + term.getValue());
+      System.out.println("    String: " + term.getValue());
     } else if (term instanceof TermTime) {
-      //System.out.println("    Time: " + term.getValue());
+      System.out.println("    Time: " + term.getValue());
     } else if (term instanceof TermURI) {
-      //System.out.println("    URI: " + term.getValue());
+      System.out.println("    URI: " + term.getValue());
     }
   }
 
   private void selectors(CombinedSelector[] combinedSelectors) {
     for (CombinedSelector s : combinedSelectors) {
-      //System.out.println(s);
+      System.out.println(s);
       realSelectors(s);
     }
   }
   
   public static void main(String[] arguments) throws Exception {
-    //System.out.println("NICO");
+    System.out.println("NICO");
     new Nico();
   }
   
