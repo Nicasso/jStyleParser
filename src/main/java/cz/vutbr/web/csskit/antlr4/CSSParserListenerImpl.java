@@ -262,12 +262,12 @@ public class CSSParserListenerImpl implements CSSParserListener {
     }
 
     private void logEnter(String entry) {
-    	System.out.println("Enter: "+entry);
+    	//System.out.println("Enter: "+entry);
         log.trace("Enter: " + generateSpaces(spacesCounter) + "{}", entry);
     }
 
     private void logLeave(String leaving) {
-    	System.out.println("Exit: "+leaving);
+    	//System.out.println("Exit: "+leaving);
         log.trace("Leave: " + generateSpaces(spacesCounter) + "{}", leaving);
     }
 
@@ -586,6 +586,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
     @Override
     public void enterValuepart(CSSParser.ValuepartContext ctx) {
         logEnter("valuepart: >" + ctx.getText() + "<");
+        
         if (ctx.MINUS() != null) {
             terms_stack.peek().unary = -1;
             terms_stack.peek().dash = true;
@@ -648,20 +649,22 @@ public class CSSParserListenerImpl implements CSSParserListener {
     @Override
     public void exitValuepart(CSSParser.ValuepartContext ctx) {   	
         //try convert color from current term
+//    	System.out.println("VP: "+ctx.getText());
+//        System.out.println(getCodeLocation(ctx,0));
+//        System.out.println("");
         if (terms_stack.peek().term != null) {
             TermColor termColor = null;
             if (terms_stack.peek().term instanceof TermIdent) { // red
                 termColor = tf.createColor((TermIdent) terms_stack.peek().term);
-                termColor.setLocation(getCodeLocation(ctx, 0));
 //                termColor.setOriginalFormat(ctx.getText());
             } else if (terms_stack.peek().term instanceof TermFunction) { // rgba(0,0,0)
                 termColor = tf.createColor((TermFunction) terms_stack.peek().term);
-                termColor.setLocation(getCodeLocation(ctx, 0));
 //                termColor.setOriginalFormat(ctx.getText());
             }
             if (termColor != null) {
                 log.debug("term color is OK - creating - " + termColor.toString());
                 terms_stack.peek().term = termColor;
+                terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
             }
 
         }
@@ -1223,6 +1226,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
             log.debug("mediaQuery INVALID - addding NOT ALL");
         }
         log.debug("Adding media query {}", tmpMediaQueryScope.q);
+        tmpMediaQueryScope.q.setLocation(getCodeLocation(ctx, 0));
         mediaQueryList.add(tmpMediaQueryScope.q);
     }
 
@@ -1287,6 +1291,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 
         //create temp media expression storage
         tmpMediaExpression = rf.createMediaExpression();
+        tmpMediaExpression.setLocation(getCodeLocation(ctx, 0));
         //create temp declaration storage
         tmpDeclarationScope = getDeclarationScopeAndInit();
         //set property to declaration

@@ -1,6 +1,66 @@
-.lal  {
-  /* BG INFO */
-  background: #A41516 !important;
-  /* GA NOU NIET STUK KUT DING */
-  width: calc(100% - 80px);
+/**
+ * HALLO STYLE
+ * SHEET
+ */
+
+.background2 {
+  background: linear-gradient(red,yellow,blue);
+  // Singe line above declaration which will be ignored
+  animation: backgroundMoveRight 60s linear infinite;
+}
+
+@font-face {
+    font-family: myFirstFont;
+    src: url(sansation_light.woff);
+}
+
+/**
+ * Multi line above rule 
+ */
+.kak {
+  /**
+   * Multi line above declaration
+   */
+  font-family: myFirstFont;
+}
+
+#submit:active, #submit:first-child  {
+  background: #A41516 !important; 
+  /**
+   * Multi line below declaration
+   */
+}
+
+h1, h2, h3 {
+  font-family: "Roboto", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", "Helvetica", "sans-serif";
+  color: #E32526;
+}
+
+#contact-form label, #submit {
+  display: block;
+}
+
+@import url("style2.css");
+
+div[class*="post"] {
+  border-color: red;
+}
+
+.lol#lal {
+  border-color: red;
+}
+
+.parent > #child {
+  margin: 10px 5px 10px 5px;
+}
+
+p {
+  background: url("chess.png") 40% / 10em gray round fixed border-box;
+}
+
+@media tv and (min-width: 700px) and (orientation: landscape) {
+  #logo {
+    width: 250px;
+    margin: 0 auto;
+  }
 }
