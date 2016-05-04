@@ -12,6 +12,7 @@ import cz.vutbr.web.css.CombinedSelector;
 import cz.vutbr.web.css.Declaration;
 import cz.vutbr.web.css.MediaQuery;
 import cz.vutbr.web.css.RuleBlock;
+import cz.vutbr.web.css.RuleCharset;
 import cz.vutbr.web.css.RuleFactory;
 import cz.vutbr.web.css.RuleFontFace;
 import cz.vutbr.web.css.RuleImport;
@@ -192,6 +193,19 @@ public class SimplePreparator implements Preparator {
 		log.info("Create @import");
 		
 		return (RuleImport) rp;
+	}
+
+	@Override
+	public RuleCharset prepareRuleCharset(String charset) {
+		if (charset == null | charset.isEmpty()) {
+			log.debug("Empty RuleCharset was ommited");
+			return null;
+		}
+		
+		RuleCharset rp = rf.createCharset(charset);
+		log.info("Create @charset");
+		
+		return (RuleCharset) rp;
 	}
 
 }

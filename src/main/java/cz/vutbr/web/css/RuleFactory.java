@@ -30,6 +30,8 @@ public interface RuleFactory {
 	 * @return New CSS import rule
 	 */
 	RuleImport createImport(String uri);
+	
+	RuleCharset createCharset(String charset);
 
 	/**
 	 * Creates CSS rule set, that is collection of CSS declarations

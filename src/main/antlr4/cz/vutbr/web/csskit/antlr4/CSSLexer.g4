@@ -166,39 +166,8 @@ IDENT
 	;	
 
 CHARSET
-//@init {
-//	System.out.println("eee");
-//  tr.expecting(CHARSET);
-//}
-//@after {
-//	tr.end();
-//}
-
-	: '@charset' S* STRING_MACR S* SEMICOLON
-	  {
-	    // we have to trim manually
-	    String enc = cz.vutbr.web.csskit.antlr4.CSSToken.extractSTRING(getText());
-	    if (tokencnt <= 1) //we are at the beginning of the style sheet
-	    {
-            try {
-                log.warn("Changing charset to {}", enc);
-                ((cz.vutbr.web.csskit.antlr4.CSSInputStream) _input).setEncoding(enc);
-                //input = setCharStream(new ANTLFileStream(input.getSourceName(), enc));
-            }
-            catch(java.nio.charset.IllegalCharsetNameException icne) {
-                log.warn("Could not change to unsupported charset!", icne);
-                throw new RuntimeException(new cz.vutbr.web.css.CSSException("Unsupported charset: " + enc));
-            }
-            catch (java.io.IOException e) {
-                log.warn("Could not change to unsupported charset!", e);
-            }
-        }
-        else{
-            log.warn("Ignoring @charset rule not at the beginning of the style sheet");
-        }
-	  }
+	: '@charset'
 	;
-
 
 IMPORT
 	: '@import' 
@@ -307,7 +276,7 @@ UNIRANGE:
              (('0'..'9' | 'a'..'f' | 'A'..'F') ('0'..'9' | 'a'..'f' | 'A'..'F'))?
 	)?
 	;
-
+	
 /** Comment opening */
 CDO
 	: '<!--'

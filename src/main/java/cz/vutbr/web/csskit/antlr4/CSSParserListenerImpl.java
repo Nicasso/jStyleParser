@@ -37,6 +37,7 @@ import cz.vutbr.web.csskit.CSSError;
 import cz.vutbr.web.csskit.CommentImpl;
 import cz.vutbr.web.csskit.RuleArrayList;
 import cz.vutbr.web.csskit.TermColorImpl;
+import cz.vutbr.web.csskit.antlr4.CSSParser.Charset_nameContext;
 import cz.vutbr.web.csskit.antlr4.CSSParser.CommentContext;
 
 
@@ -528,6 +529,8 @@ public class CSSParserListenerImpl implements CSSParserListener {
     public void exitFunct(CSSParser.FunctContext ctx) {
         if (ctx.EXPRESSION() != null) {
             //EXPRESSION
+        	System.out.println("EXPRESSION: ");
+        	System.out.println(ctx.getText());
             throw new UnsupportedOperationException("EXPRESSIONS are not allowed yet");
             //todo
         } else {
@@ -587,6 +590,9 @@ public class CSSParserListenerImpl implements CSSParserListener {
     public void enterValuepart(CSSParser.ValuepartContext ctx) {
         logEnter("valuepart: >" + ctx.getText() + "<");
         
+        // So that it doesn't break with this ugly CSS hack: padding: 5px 5px 5px 5px\0;
+        String text = ctx.getText().replaceAll("(\\\\[0-9])+$", "").trim();
+        
         if (ctx.MINUS() != null) {
             terms_stack.peek().unary = -1;
             terms_stack.peek().dash = true;
@@ -599,15 +605,15 @@ public class CSSParserListenerImpl implements CSSParserListener {
         } else if (ctx.string() != null) {
             //string
             log.debug("VP - string");
-            terms_stack.peek().term = tf.createString(extractTextUnescaped(ctx.string().getText()));
+            terms_stack.peek().term = tf.createString(extractTextUnescaped(text));
             terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
         } else if (ctx.IDENT() != null) {
             log.debug("VP - ident");
-            terms_stack.peek().term = tf.createIdent(extractTextUnescaped(ctx.IDENT().getText()), terms_stack.peek().dash);
+            terms_stack.peek().term = tf.createIdent(extractTextUnescaped(text), terms_stack.peek().dash);
             terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
         } else if (ctx.HASH() != null) {
             log.debug("VP - hash");
-             TermColor color = tf.createColor(ctx.HASH().getText());
+             TermColor color = tf.createColor(text);
 //             color.setOriginalFormat(ctx.getText());
              terms_stack.peek().term = color;
              terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
@@ -616,12 +622,16 @@ public class CSSParserListenerImpl implements CSSParserListener {
             }
         } else if (ctx.PERCENTAGE() != null) {
             log.debug("VP - percentage");
-            terms_stack.peek().term = tf.createPercent(ctx.PERCENTAGE().getText(), terms_stack.peek().unary);
+            terms_stack.peek().term = tf.createPercent(text, terms_stack.peek().unary);
             terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
         } else if (ctx.DIMENSION() != null) {
             log.debug("VP - dimension");
-            String dim = ctx.DIMENSION().getText();
+            String dim = text.trim();
             terms_stack.peek().term = tf.createDimension(dim, terms_stack.peek().unary);
+            // TODO: IE HACK like padding: 5px 5px 5px 5px\0; BREAKS HERE!
+            System.out.println("-------------");
+            System.out.println(ctx.getText());
+            System.out.println(dim);
             terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
             if(terms_stack.peek().term  == null){
                 log.info("Unable to create dimension from {}, unary {}", dim, terms_stack.peek().unary);
@@ -629,11 +639,11 @@ public class CSSParserListenerImpl implements CSSParserListener {
             }
         } else if (ctx.NUMBER() != null) {
             log.debug("VP - number");
-            terms_stack.peek().term = tf.createNumeric(ctx.NUMBER().getText(), terms_stack.peek().unary);
+            terms_stack.peek().term = tf.createNumeric(text, terms_stack.peek().unary);
             terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
         } else if (ctx.URI() != null) {
             log.debug("VP - uri");
-            terms_stack.peek().term = tf.createURI(extractTextUnescaped(ctx.URI().getText()),extractBase(ctx.URI()));
+            terms_stack.peek().term = tf.createURI(extractTextUnescaped(text),extractBase(ctx.URI()));
             terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
         } else if (ctx.funct() != null) {
             terms_stack.peek().term = null;
@@ -944,7 +954,6 @@ public class CSSParserListenerImpl implements CSSParserListener {
                 log.error("pseudo element cannot be used as a function");
                 tmpPseudo = null;
             } else {
-            	System.out.println("TOTAL: "+ctx.getText());
                 //function
                 //var first is function name
                 String value = "";
@@ -1075,7 +1084,10 @@ public class CSSParserListenerImpl implements CSSParserListener {
             return;
         }
         if (ctx.CHARSET() != null) {
-
+        	String charset = ctx.charset_name().getText();
+        	tmpAtStatementOrRuleSetScope.stm = preparator.prepareRuleCharset(charset);
+            tmpAtStatementOrRuleSetScope.stm.setLocation(getCodeLocation(ctx, 0));
+            this.preventImports = true;
         } else if (ctx.IMPORT() != null) {
         	String iuri = ctx.import_uri().getText();
             tmpAtStatementOrRuleSetScope.stm = preparator.prepareRuleImport(iuri);
@@ -1457,6 +1469,16 @@ public class CSSParserListenerImpl implements CSSParserListener {
 				endLine, 
 				endPosition
 		);
+	}
+
+	@Override
+	public void enterCharset_name(Charset_nameContext ctx) {
+		logEnter("CHARSET NAME");
+	}
+
+	@Override
+	public void exitCharset_name(Charset_nameContext ctx) {
+		logEnter("CHARSET NAME");
 	}
 
 }

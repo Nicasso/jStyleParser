@@ -71,7 +71,7 @@ inlinestyle
 
 //http://www.w3.org/TR/css-syntax-3/
 stylesheet
-	: comment* ( CDO | CDC  | S | nostatement | statement )* (S | comment)*
+	: comment* ( CDO | CDC  | S | statement | nostatement)* (S | comment)*
     ;
     catch [RecognitionException re] {
         log.error("Recognition exception | stylesheet | should be EMPTY");
@@ -85,7 +85,7 @@ statement
     }
 
 atstatement
-	: CHARSET
+	: CHARSET S* charset_name S* SEMICOLON
 	| IMPORT S* import_uri S* media? SEMICOLON
 	| page
     | VIEWPORT S* LCURLY S* declarations RCURLY
@@ -99,6 +99,10 @@ atstatement
         getCSSErrorHandler().consumeUntil(this,intervalSet);
         _localctx.addErrorNode(this.getTokenFactory().create(INVALID_ATSTATEMENT,""));
      }
+
+charset_name
+    : (STRING | STRING_MACR)
+    ;
 
 import_uri
     : (STRING | URI)

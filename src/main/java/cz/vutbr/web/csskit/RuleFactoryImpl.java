@@ -9,6 +9,7 @@ import cz.vutbr.web.css.CombinedSelector;
 import cz.vutbr.web.css.Declaration;
 import cz.vutbr.web.css.MediaExpression;
 import cz.vutbr.web.css.MediaQuery;
+import cz.vutbr.web.css.RuleCharset;
 import cz.vutbr.web.css.RuleFactory;
 import cz.vutbr.web.css.RuleFontFace;
 import cz.vutbr.web.css.RuleImport;
@@ -160,5 +161,10 @@ public class RuleFactoryImpl implements RuleFactory {
 		StyleSheet ret = new StyleSheetImpl();
 		ret.setOrigin(origin);
 		return ret;
+	}
+
+	@Override
+	public RuleCharset createCharset(String charset) {
+		return new RuleCharsetImpl(charset);
 	}
 }

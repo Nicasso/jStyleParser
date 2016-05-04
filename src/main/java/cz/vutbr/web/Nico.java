@@ -13,6 +13,7 @@ import cz.vutbr.web.css.MediaExpression;
 import cz.vutbr.web.css.MediaQuery;
 import cz.vutbr.web.css.Rule;
 import cz.vutbr.web.css.RuleBlock;
+import cz.vutbr.web.css.RuleCharset;
 import cz.vutbr.web.css.RuleFontFace;
 import cz.vutbr.web.css.RuleImport;
 import cz.vutbr.web.css.RuleMargin;
@@ -124,6 +125,10 @@ public class Nico {
     	  System.out.println("");
     	  System.out.println("RULE: "+ruleBlock.getLocation().toString());
         ruleImport((RuleImport) ruleBlock);
+      } else if (ruleBlock instanceof RuleCharset) {
+    	  System.out.println("");
+    	  System.out.println("RULE: "+ruleBlock.getLocation().toString());
+    	  ruleCharset((RuleCharset) ruleBlock);
       } else {
         System.out.println("This is a exotic block");
       }
@@ -193,6 +198,12 @@ public class Nico {
       declarations(set);
     }
   }
+  
+  private void ruleCharset(RuleCharset ruleBlock) {
+	    System.out.println("");
+	    System.out.println("This is a ruleCharset");
+	    System.out.println(ruleBlock.getCharset());
+}
   
   private void ruleImport(RuleImport ruleBlock) {
 	    System.out.println("");

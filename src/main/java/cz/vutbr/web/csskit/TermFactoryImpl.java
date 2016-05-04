@@ -157,7 +157,7 @@ public class TermFactoryImpl implements TermFactory {
 	    try {
     		for (TermNumeric.Unit unit : TermNumeric.Unit.values()) {
     			// try to find valid unit identifier
-    			if (value.matches("^[0-9]*\\.?[0-9]+" + unit.value() + "$")) {
+    			if (value.matches("^-?[0-9]*\\.?[0-9]+" + unit.value() + "$")) {
     				Float f = convertFloat(value, unit.value(), unary);
     				if (unit.isAngle())
     					return (TermNumeric<Float>) (new TermAngleImpl()).setUnit(
@@ -241,8 +241,8 @@ public class TermFactoryImpl implements TermFactory {
                 if (value.endsWith(unit))
                     value = value.substring(0, value.length() - unit.length());
             }
-
-			return Float.parseFloat(value) * unary;
+            // @TODO HACK NICO SINCE - NUMBER WOULD BREAK!
+			return Float.parseFloat(value);// * unary;
 		} catch (NumberFormatException e) {
 			throw new IllegalArgumentException(
 					"Invalid number format " + value, e);
