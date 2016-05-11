@@ -398,6 +398,10 @@ HAT
 S
 	: W_CHAR+
 	;
+	
+S_NO_NEWLINE
+	: W_CHAR_NO_NEWLINE+
+	;
 
 COMMENT	
     : '/*' .*? '*/'
@@ -538,6 +542,11 @@ W_MACR
 fragment 
 W_CHAR
   	: '\u0009' | '\u000A' | '\u000B' | '\u000C' | '\u000D' | '\u0020'
+  	;
+  	
+fragment 
+W_CHAR_NO_NEWLINE
+  	: '\u0009' | '\u000B' | '\u000C' | '\u0020'
   	;
 
 fragment
