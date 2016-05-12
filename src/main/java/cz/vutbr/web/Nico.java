@@ -32,6 +32,7 @@ import cz.vutbr.web.css.Selector.ElementName;
 import cz.vutbr.web.css.StyleSheet;
 import cz.vutbr.web.css.Term;
 import cz.vutbr.web.css.TermAngle;
+import cz.vutbr.web.css.TermAudio;
 import cz.vutbr.web.css.TermCalc;
 import cz.vutbr.web.css.TermColor;
 import cz.vutbr.web.css.TermExpression;
@@ -356,6 +357,10 @@ public class Nico {
 	private void terms(Term<?> term) {
 		if (term instanceof TermAngle) {
 			System.out.println("    Angle: " + term.getValue());
+		} else if (term instanceof TermAudio) {
+			System.out.println("    Audio: " + term.getValue());
+			TermAudio a = (TermAudio) term;
+			System.out.println(a.getUnit());
 		} else if (term instanceof TermColor) {
 			System.out.println("    Color: " + term.toString() + " - " + term.getValue() + " - " + term.getOperator());
 			System.out.println(((TermColor) term).getOriginalFormat());

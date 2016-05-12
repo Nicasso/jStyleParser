@@ -41,6 +41,7 @@ public interface TermNumeric<T extends Number> extends Term<T> {
     	khz("khz"),
     	dpi("dpi"),
     	dpcm("dpcm"),
+    	db("dB"),
     	dppx("dppx");
     
     	private String value;
@@ -49,6 +50,10 @@ public interface TermNumeric<T extends Number> extends Term<T> {
     		this.value = value;
     	}
     	public String value() { return value; }
+    	
+    	public boolean isAudio() {
+    		return this==db;
+    	}
     	
     	public boolean isAngle() {
     		return this==deg || this==rad || this==grad || this==turn;

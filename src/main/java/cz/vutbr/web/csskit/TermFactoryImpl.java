@@ -155,13 +155,16 @@ public class TermFactoryImpl implements TermFactory {
 
 	public TermNumeric<Float> createDimension(String value, int unary) {
 
-	    try {
+	    //try {
     		for (TermNumeric.Unit unit : TermNumeric.Unit.values()) {
     			// try to find valid unit identifier
     			if (value.matches("^-?[0-9]*\\.?[0-9]+" + unit.value() + "$")) {
     				Float f = convertFloat(value, unit.value(), unary);
     				if (unit.isAngle())
     					return (TermNumeric<Float>) (new TermAngleImpl()).setUnit(
+    							unit).setValue(f);
+    				else if (unit.isAudio())
+    					return (TermNumeric<Float>) (new TermAudioImpl()).setUnit(
     							unit).setValue(f);
     				else if (unit.isFrequency())
     					return (TermNumeric<Float>) (new TermFrequencyImpl())
@@ -178,9 +181,9 @@ public class TermFactoryImpl implements TermFactory {
     			}
     
     		}
-	    } catch (IllegalArgumentException e) {
-	        return null;
-	    }
+//	    } catch (IllegalArgumentException e) {
+//	        return null;
+//	    }
 
 		return null;
 
@@ -236,6 +239,7 @@ public class TermFactoryImpl implements TermFactory {
 		try {
             if (unit != null)
             {
+            	unit = unit.trim().toLowerCase();
     			// trim & lowercase
     			value = value.trim().toLowerCase();
     			// trim units from value

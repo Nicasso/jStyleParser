@@ -636,6 +636,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
             String dim = text.trim();
             terms_stack.peek().term = tf.createDimension(dim, terms_stack.peek().unary);
             // TODO: IE HACK like padding: 5px 5px 5px 5px\0; BREAKS HERE!
+            System.out.println(terms_stack.peek().term);
             System.out.println("-------------");
             System.out.println(ctx.getText());
             System.out.println(dim);
