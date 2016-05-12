@@ -39,6 +39,7 @@ public interface CSSNodeVisitor {
 	
 	public Object visit(TermAngle node);
 	public Object visit(TermColor node);
+	public Object visit(TermCalc node);
 	public Object visit(TermExpression node);
 	public Object visit(TermFloatValue node);
 	public Object visit(TermLength node);

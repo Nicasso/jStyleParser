@@ -28,6 +28,7 @@ import cz.vutbr.web.css.RuleMargin;
 import cz.vutbr.web.css.RuleSet;
 import cz.vutbr.web.css.Selector;
 import cz.vutbr.web.css.Term;
+import cz.vutbr.web.css.TermCalc;
 import cz.vutbr.web.css.TermColor;
 import cz.vutbr.web.css.TermFactory;
 import cz.vutbr.web.css.TermFunction;
@@ -37,6 +38,9 @@ import cz.vutbr.web.csskit.CSSError;
 import cz.vutbr.web.csskit.CommentImpl;
 import cz.vutbr.web.csskit.RuleArrayList;
 import cz.vutbr.web.csskit.TermColorImpl;
+import cz.vutbr.web.csskit.antlr4.CSSParser.CalcproductContext;
+import cz.vutbr.web.csskit.antlr4.CSSParser.CalcsumContext;
+import cz.vutbr.web.csskit.antlr4.CSSParser.CalcvalueContext;
 import cz.vutbr.web.csskit.antlr4.CSSParser.Charset_nameContext;
 import cz.vutbr.web.csskit.antlr4.CSSParser.CommentContext;
 
@@ -263,7 +267,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
     }
 
     private void logEnter(String entry) {
-    	//System.out.println("Enter: "+entry);
+    	System.out.println("Enter: "+entry);
         log.trace("Enter: " + generateSpaces(spacesCounter) + "{}", entry);
     }
 
@@ -521,7 +525,6 @@ public class CSSParserListenerImpl implements CSSParserListener {
 
     @Override
     public void enterFunct(CSSParser.FunctContext ctx) {
-
         logEnter("funct: " + ctx.getText());
     }
 
@@ -533,6 +536,12 @@ public class CSSParserListenerImpl implements CSSParserListener {
         	System.out.println(ctx.getText());
             throw new UnsupportedOperationException("EXPRESSIONS are not allowed yet");
             //todo
+        } else if (ctx.CALC() != null) {
+        	System.out.println("CALC HERE: "+ctx.getText());
+        	
+        	TermCalc calc = tf.createCalc(ctx.calcsum().getText());
+        	terms_stack.peek().term = calc;
+            terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
         } else {
             String fname = extractTextUnescaped(ctx.FUNCTION().getText());
             
@@ -579,8 +588,6 @@ public class CSSParserListenerImpl implements CSSParserListener {
                 log.debug("Setting function: {}", function.toString());
 
             }
-            
-            
             //function
         }
         logLeave("funct");
@@ -1479,6 +1486,39 @@ public class CSSParserListenerImpl implements CSSParserListener {
 	@Override
 	public void exitCharset_name(Charset_nameContext ctx) {
 		logEnter("CHARSET NAME");
+	}
+
+	@Override
+	public void enterCalcsum(CalcsumContext ctx) {
+		logEnter("Calcsum");
+	}
+
+	@Override
+	public void exitCalcsum(CalcsumContext ctx) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void enterCalcproduct(CalcproductContext ctx) {
+		logEnter("Calcproduct");
+	}
+
+	@Override
+	public void exitCalcproduct(CalcproductContext ctx) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void enterCalcvalue(CalcvalueContext ctx) {
+		logEnter("Calcvalue");
+	}
+
+	@Override
+	public void exitCalcvalue(CalcvalueContext ctx) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

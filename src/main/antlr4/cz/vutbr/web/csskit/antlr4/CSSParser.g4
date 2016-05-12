@@ -329,11 +329,27 @@ funct
         functLevel--;
     }
     : EXPRESSION //-> EXPRESSION
+    | CALC S* calcsum S* RPAREN //-> CALC
 	| FUNCTION S* terms? RPAREN //-> ^(FUNCTION terms?)
 	;
     catch [RecognitionException re] {
         log.error("Recognition exception | funct | should be empty");
     }
+    
+calcsum 
+	: S* calcproduct ( S* ( PLUS | MINUS ) S* calcproduct )*
+	;
+	
+calcproduct
+	: S* calcvalue ( S* ASTERISK S* calcvalue S* | S* SLASH S* NUMBER S*)*
+	;
+	
+calcvalue
+	: NUMBER 
+	| DIMENSION 
+	| PERCENTAGE 
+	| '(' S* calcsum S* ')'
+	;
 
 /** a part of a property value */
 valuepart

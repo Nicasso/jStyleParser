@@ -18,6 +18,7 @@ public interface TermFactory {
 	TermFrequency createFrequency(String value, Unit unit, int unary);
 	
     TermExpression createExpression(String expr);
+    TermCalc createCalc(String expr);
 	TermFunction createFunction();
 	
 	TermIdent createIdent(String value);

@@ -30,6 +30,7 @@ import cz.vutbr.web.css.Selector.ElementName;
 import cz.vutbr.web.css.StyleSheet;
 import cz.vutbr.web.css.Term;
 import cz.vutbr.web.css.TermAngle;
+import cz.vutbr.web.css.TermCalc;
 import cz.vutbr.web.css.TermColor;
 import cz.vutbr.web.css.TermExpression;
 import cz.vutbr.web.css.TermFrequency;
@@ -331,7 +332,9 @@ public class Nico {
       System.out.println("    Color: " +term.toString()+" - "+ term.getValue() + " - " + term.getOperator());
       System.out.println(((TermColor) term).getOriginalFormat());
     } else if (term instanceof TermExpression) {
-      System.out.println("    Expression: " + term.getValue()); 
+      System.out.println("    Expression: " + term.getValue());
+    } else if (term instanceof TermCalc) {
+        System.out.println("    Calc: " + term.getValue());
     } else if (term instanceof TermFrequency) {
       System.out.println("    Frequency: " + term.getValue());
     } else if (term instanceof TermFunction) {

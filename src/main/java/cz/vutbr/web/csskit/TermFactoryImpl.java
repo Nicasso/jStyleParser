@@ -4,6 +4,7 @@ import java.net.URL;
 
 import cz.vutbr.web.css.Term;
 import cz.vutbr.web.css.TermAngle;
+import cz.vutbr.web.css.TermCalc;
 import cz.vutbr.web.css.TermColor;
 import cz.vutbr.web.css.TermExpression;
 import cz.vutbr.web.css.TermFactory;
@@ -277,5 +278,10 @@ public class TermFactoryImpl implements TermFactory {
 		} catch (NullPointerException e) {
 			throw new IllegalArgumentException("Invalid null format");
 		}
+	}
+
+	@Override
+	public TermCalc createCalc(String expr) {
+		return (new TermCalcImpl()).setValue(expr);
 	}
 }
