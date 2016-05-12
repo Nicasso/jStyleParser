@@ -1,3 +1,9 @@
-span {
- width: calc( 50% + (20px * 2) );
+@namespace "http://example.com/foo";
+
+@counter-style go {
+  system: alphabetic;
+  symbols: url("white.svg") url(black.svg);
+  suffix: " ";
 }
+
+@namespace toto "http://toto.example.org";

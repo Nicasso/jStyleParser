@@ -7,8 +7,10 @@ import cz.vutbr.web.css.Declaration;
 import cz.vutbr.web.css.MediaQuery;
 import cz.vutbr.web.css.RuleBlock;
 import cz.vutbr.web.css.RuleCharset;
+import cz.vutbr.web.css.RuleCounterStyle;
 import cz.vutbr.web.css.RuleImport;
 import cz.vutbr.web.css.RuleMargin;
+import cz.vutbr.web.css.RuleNameSpace;
 import cz.vutbr.web.css.RuleSet;
 import cz.vutbr.web.css.Selector;
 
@@ -91,6 +93,10 @@ public interface Preparator {
      * @return RuleImport
      */
     public RuleImport prepareRuleImport(String uri);
+    
+    public RuleNameSpace prepareRuleNamespace(String prefix, String uri);
+    
+    public RuleBlock<?> prepareRuleCounterStyle(String name, List<Declaration> decl);
     
     public RuleCharset prepareRuleCharset(String charset);
     

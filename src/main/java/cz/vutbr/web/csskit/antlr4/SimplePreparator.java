@@ -13,11 +13,13 @@ import cz.vutbr.web.css.Declaration;
 import cz.vutbr.web.css.MediaQuery;
 import cz.vutbr.web.css.RuleBlock;
 import cz.vutbr.web.css.RuleCharset;
+import cz.vutbr.web.css.RuleCounterStyle;
 import cz.vutbr.web.css.RuleFactory;
 import cz.vutbr.web.css.RuleFontFace;
 import cz.vutbr.web.css.RuleImport;
 import cz.vutbr.web.css.RuleMargin;
 import cz.vutbr.web.css.RuleMedia;
+import cz.vutbr.web.css.RuleNameSpace;
 import cz.vutbr.web.css.RulePage;
 import cz.vutbr.web.css.RuleSet;
 import cz.vutbr.web.css.RuleViewport;
@@ -208,4 +210,35 @@ public class SimplePreparator implements Preparator {
 		return (RuleCharset) rp;
 	}
 
+	@Override
+	public RuleNameSpace prepareRuleNamespace(String prefix, String uri) {
+		if (uri == null) {
+			log.debug("Empty RuleNameSpace was ommited");
+			return null;
+		}
+		
+		RuleNameSpace rule = rf.createNameSpace(prefix, uri);
+		log.info("Create @namespace");
+		
+		return rule;
+	}
+
+	@Override
+	public RuleBlock<?> prepareRuleCounterStyle(String name, List<Declaration> decl) {
+		if (name == null || name.isEmpty()) {
+			log.debug("Empty RuleCounterStyle was ommited");
+			return null;
+		}
+
+		// create media at position of mark
+		RuleCounterStyle rm = rf.createCounterStyle(name);
+		rm.replaceAll(decl);
+//		if (decl != null && !decl.isEmpty())
+//			rm.setName(name);
+
+		log.info("Create @media as with:\n{}", rm);
+
+		return (RuleBlock<?>) rm;
+
+	}
 }

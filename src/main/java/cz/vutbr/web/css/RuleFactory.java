@@ -32,6 +32,10 @@ public interface RuleFactory {
 	RuleImport createImport(String uri);
 	
 	RuleCharset createCharset(String charset);
+	
+	RuleNameSpace createNameSpace(String prefix, String uri);
+	
+	RuleCounterStyle createCounterStyle(String name);
 
 	/**
 	 * Creates CSS rule set, that is collection of CSS declarations

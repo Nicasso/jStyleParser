@@ -1100,6 +1100,30 @@ public class CSSParserListenerImpl implements CSSParserListener {
             tmpAtStatementOrRuleSetScope.stm = preparator.prepareRuleImport(iuri);
             tmpAtStatementOrRuleSetScope.stm.setLocation(getCodeLocation(ctx, 0));
             this.preventImports = true;
+        } else if (ctx.NAMESPACE() != null) {
+        	String prefix = "";
+        	if(ctx.prefix != null) {
+        		prefix = extractTextUnescaped(ctx.prefix.getText());
+        	}
+        	String uri;
+        	if (ctx.STRING() != null) {
+        		uri = extractTextUnescaped(ctx.STRING().getText());
+        	} else if(ctx.URI() != null) {
+        		uri = extractTextUnescaped(ctx.URI().getText());
+        	} else {
+        		uri = "";
+        	}
+            tmpAtStatementOrRuleSetScope.stm = preparator.prepareRuleNamespace(prefix, uri);
+            tmpAtStatementOrRuleSetScope.stm.setLocation(getCodeLocation(ctx, 0));
+            this.preventImports = true;
+        } else if (ctx.COUNTERSTYLE() != null) {
+            log.debug("exitAtstatement COUNTERSTYLE");
+            String name = extractTextUnescaped(ctx.name.getText());
+            System.out.println("COUNTERS STYLO");
+            System.out.println(tmpDeclarations.toString());
+            tmpAtStatementOrRuleSetScope.stm = preparator.prepareRuleCounterStyle(name, tmpDeclarations);
+            tmpAtStatementOrRuleSetScope.stm.setLocation(getCodeLocation(ctx, 0));
+            this.preventImports = true;
         } else if (ctx.page() != null) {
             //implemented in exitPage
 

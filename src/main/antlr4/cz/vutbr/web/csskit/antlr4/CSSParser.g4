@@ -91,6 +91,8 @@ atstatement
     | VIEWPORT S* LCURLY S* declarations RCURLY
 	| FONTFACE S* LCURLY S* declarations RCURLY
 	| MEDIA S* media? LCURLY S* (media_rule S*)* RCURLY
+	| NAMESPACE S* ((prefix = IDENT) *S)? (STRING | URI) S* SEMICOLON S*
+	| COUNTERSTYLE S* (name = IDENT) S* LCURLY S* declarations RCURLY
 	| unknown_atrule
 	;
     catch [RecognitionException re] {

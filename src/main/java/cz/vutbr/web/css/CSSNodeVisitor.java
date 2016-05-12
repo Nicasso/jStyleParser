@@ -16,6 +16,8 @@ public interface CSSNodeVisitor {
 	public Object visit(RuleCharset node);
 	public Object visit(RuleFontFace node);
 	public Object visit(RuleMargin node);
+	public Object visit(RuleCounterStyle node);
+	public Object visit(RuleNameSpace node);
 	public Object visit(RuleMedia node);
 	public Object visit(RulePage node);
 	public Object visit(RuleSet node);

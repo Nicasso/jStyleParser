@@ -181,6 +181,14 @@ PAGE
 	: '@page'
 	;
 
+NAMESPACE
+	: '@namespace'
+	;
+	
+COUNTERSTYLE
+	: '@counter-style'
+	;
+
 MARGIN_AREA
   : '@top-left-corner'
   | '@top-left'

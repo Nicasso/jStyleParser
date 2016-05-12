@@ -10,11 +10,13 @@ import cz.vutbr.web.css.Declaration;
 import cz.vutbr.web.css.MediaExpression;
 import cz.vutbr.web.css.MediaQuery;
 import cz.vutbr.web.css.RuleCharset;
+import cz.vutbr.web.css.RuleCounterStyle;
 import cz.vutbr.web.css.RuleFactory;
 import cz.vutbr.web.css.RuleFontFace;
 import cz.vutbr.web.css.RuleImport;
 import cz.vutbr.web.css.RuleMargin;
 import cz.vutbr.web.css.RuleMedia;
+import cz.vutbr.web.css.RuleNameSpace;
 import cz.vutbr.web.css.RulePage;
 import cz.vutbr.web.css.RuleSet;
 import cz.vutbr.web.css.RuleViewport;
@@ -166,5 +168,15 @@ public class RuleFactoryImpl implements RuleFactory {
 	@Override
 	public RuleCharset createCharset(String charset) {
 		return new RuleCharsetImpl(charset);
+	}
+
+	@Override
+	public RuleNameSpace createNameSpace(String prefix, String uri) {
+		return new RuleNameSpaceImpl(prefix, uri);
+	}
+
+	@Override
+	public RuleCounterStyle createCounterStyle(String name) {
+		return new RuleCounterStyleImpl(name);
 	}
 }
