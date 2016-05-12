@@ -91,8 +91,9 @@ atstatement
     | VIEWPORT S* LCURLY S* declarations RCURLY
 	| FONTFACE S* LCURLY S* declarations RCURLY
 	| MEDIA S* media? LCURLY S* (media_rule S*)* RCURLY
-	| NAMESPACE S* ((prefix = IDENT) *S)? (STRING | URI) S* SEMICOLON S*
+	| NAMESPACE S* ((prefix = IDENT) *S)? (STRING | URI) S* SEMICOLON
 	| COUNTERSTYLE S* (name = IDENT) S* LCURLY S* declarations RCURLY
+	| KEYFRAMES S* (name = IDENT) S* LCURLY S* keyframes_blocks S* RCURLY
 	| unknown_atrule
 	;
     catch [RecognitionException re] {
@@ -101,6 +102,15 @@ atstatement
         getCSSErrorHandler().consumeUntil(this,intervalSet);
         _localctx.addErrorNode(this.getTokenFactory().create(INVALID_ATSTATEMENT,""));
      }
+     
+keyframes_blocks
+	: ( keyframe_selector LCURLY S* declarations S* RCURLY S* )* 
+	;
+
+keyframe_selector
+	: ( FROM_SYM | TO_SYM | PERCENTAGE ) S* ( ',' S* ( FROM_SYM | TO_SYM | PERCENTAGE ) S* )*
+	;
+
 
 charset_name
     : (STRING | STRING_MACR)

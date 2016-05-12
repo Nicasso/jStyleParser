@@ -1,5 +1,9 @@
 package cz.vutbr.web.css;
 
+import javax.jws.soap.SOAPBinding.Style;
+
+import cz.vutbr.web.css.Selector.keyframesIdent;
+import cz.vutbr.web.css.Selector.keyframesPercentage;
 import cz.vutbr.web.csskit.RuleArrayList;
 
 /**
@@ -11,6 +15,9 @@ import cz.vutbr.web.csskit.RuleArrayList;
 public interface CSSNodeVisitor {
 	
 	public Object visit(StyleSheet node);
+	
+	public Object visit(keyframesPercentage node);
+	public Object visit(keyframesIdent node);
 	
 	public Object visit(RuleArrayList node);
 	public Object visit(RuleCharset node);

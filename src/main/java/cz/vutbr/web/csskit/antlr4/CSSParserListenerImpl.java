@@ -43,6 +43,8 @@ import cz.vutbr.web.csskit.antlr4.CSSParser.CalcsumContext;
 import cz.vutbr.web.csskit.antlr4.CSSParser.CalcvalueContext;
 import cz.vutbr.web.csskit.antlr4.CSSParser.Charset_nameContext;
 import cz.vutbr.web.csskit.antlr4.CSSParser.CommentContext;
+import cz.vutbr.web.csskit.antlr4.CSSParser.Keyframe_selectorContext;
+import cz.vutbr.web.csskit.antlr4.CSSParser.Keyframes_blocksContext;
 
 
 public class CSSParserListenerImpl implements CSSParserListener {
@@ -1542,6 +1544,28 @@ public class CSSParserListenerImpl implements CSSParserListener {
 
 	@Override
 	public void exitCalcvalue(CalcvalueContext ctx) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void enterKeyframe_selector(Keyframe_selectorContext ctx) {
+		logEnter("keyframes_selector: "+ctx.getText());
+	}
+
+	@Override
+	public void exitKeyframe_selector(Keyframe_selectorContext ctx) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void enterKeyframes_blocks(Keyframes_blocksContext ctx) {
+		logEnter("keyframes_block: "+ctx.getText());
+	}
+
+	@Override
+	public void exitKeyframes_blocks(Keyframes_blocksContext ctx) {
 		// TODO Auto-generated method stub
 		
 	}

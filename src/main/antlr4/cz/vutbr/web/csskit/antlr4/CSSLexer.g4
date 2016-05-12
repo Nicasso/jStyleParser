@@ -156,6 +156,14 @@ tokens {
 // TOKENS //
 /////////////////////////////////////////////////////////////////////////////////
 
+FROM_SYM 
+	: 'from'
+	;
+	
+TO_SYM
+	: 'to'
+	;
+
 IMPORTANT
     : 'important'
     ;
@@ -187,6 +195,13 @@ NAMESPACE
 	
 COUNTERSTYLE
 	: '@counter-style'
+	;
+	
+KEYFRAMES
+	: '@keyframes'
+	| '@-webkit-keyframes'
+	| '@-moz-keyframes'
+	| '@-o-keyframes'
 	;
 
 MARGIN_AREA
