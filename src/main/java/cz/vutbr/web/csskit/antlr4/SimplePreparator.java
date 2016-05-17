@@ -17,6 +17,7 @@ import cz.vutbr.web.css.RuleCounterStyle;
 import cz.vutbr.web.css.RuleFactory;
 import cz.vutbr.web.css.RuleFontFace;
 import cz.vutbr.web.css.RuleImport;
+import cz.vutbr.web.css.RuleKeyframes;
 import cz.vutbr.web.css.RuleMargin;
 import cz.vutbr.web.css.RuleMedia;
 import cz.vutbr.web.css.RuleNameSpace;
@@ -240,5 +241,26 @@ public class SimplePreparator implements Preparator {
 
 		return (RuleBlock<?>) rm;
 
+	}
+
+	@Override
+	public RuleBlock<?> prepareRuleKeyFrames(String name, List<RuleSet> rules) {
+		
+		
+		
+		if (rules == null || rules.isEmpty()) {
+			log.debug("Empty RuleKeyFrames was ommited");
+			System.out.println("LOLAWL");
+			return null;
+		}
+
+		RuleKeyframes rm = rf.createKeyframes(name);
+		rm.replaceAll(rules);
+//		if (media != null && !media.isEmpty())
+//			rm.setMediaQueries(media);
+
+		log.info("Create @keyframes as with:\n{}", rm);
+
+		return (RuleBlock<?>) rm;
 	}
 }

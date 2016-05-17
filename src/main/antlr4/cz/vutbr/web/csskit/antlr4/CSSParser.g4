@@ -93,7 +93,7 @@ atstatement
 	| MEDIA S* media? LCURLY S* (media_rule S*)* RCURLY
 	| NAMESPACE S* ((prefix = IDENT) *S)? (STRING | URI) S* SEMICOLON
 	| COUNTERSTYLE S* (name = IDENT) S* LCURLY S* declarations RCURLY
-	| KEYFRAMES S* (name = IDENT) S* LCURLY S* keyframes_blocks S* RCURLY
+	| KEYFRAMES S* (name = IDENT) S* LCURLY S* keyframes_block* S* RCURLY
 	| unknown_atrule
 	;
     catch [RecognitionException re] {
@@ -103,12 +103,16 @@ atstatement
         _localctx.addErrorNode(this.getTokenFactory().create(INVALID_ATSTATEMENT,""));
      }
      
-keyframes_blocks
-	: ( keyframe_selector LCURLY S* declarations S* RCURLY S* )* 
+keyframes_block
+	: keyframe_selectors LCURLY S* declarations S* RCURLY S*
+	;
+
+keyframe_selectors
+	: keyframe_selector S* ( ',' S* keyframe_selector S* )*
 	;
 
 keyframe_selector
-	: ( FROM_SYM | TO_SYM | PERCENTAGE ) S* ( ',' S* ( FROM_SYM | TO_SYM | PERCENTAGE ) S* )*
+	: ( FROM_SYM | TO_SYM | PERCENTAGE )
 	;
 
 

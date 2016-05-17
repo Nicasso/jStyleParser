@@ -279,15 +279,15 @@ public interface Selector extends Rule<Selector.SelectorPart> {
         
     }
     
-    public interface keyframesPercentage extends SelectorPart {
-    	public int getPercentage();
-    	public void setPercentage(int percentage);
+    public interface KeyframesPercentage extends SelectorPart {
+    	public String getPercentage();
+    	public void setPercentage(String percentage);
     	
         public CodeLocation getLocation();
         public void setLocation(CodeLocation location);
     }
     
-    public interface keyframesIdent extends SelectorPart {
+    public interface KeyframesIdent extends SelectorPart {
     	public String getIdent();
     	public void setIdent(String ident);
     	

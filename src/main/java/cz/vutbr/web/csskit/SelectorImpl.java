@@ -1240,15 +1240,24 @@ public class SelectorImpl extends AbstractRule<Selector.SelectorPart> implements
 		}
 	}
 	
-	public static class keyframesPercentageImpl implements keyframesPercentage {
+	public static class KeyframesPercentageImpl implements KeyframesPercentage {
 		protected CodeLocation location;
-		protected int percentage;
+		protected String percentage;
 		
-		public int getPercentage() {
+		protected KeyframesPercentageImpl(String percentage) {
+			this.percentage= percentage;
+		}
+		
+		public String getPercentage() {
     		return percentage;
     	}
 		
-    	public void setPercentage(int percentage) {
+		@Override
+		public String toString() {
+			return percentage;
+		}
+		
+    	public void setPercentage(String percentage) {
     		this.percentage = percentage;
     	}    	
 
@@ -1278,9 +1287,18 @@ public class SelectorImpl extends AbstractRule<Selector.SelectorPart> implements
 		}
     }
     
-	public static class keyframesIdentImpl implements keyframesIdent {
+	public static class KeyframesIdentImpl implements KeyframesIdent {
 		protected CodeLocation location;
 		protected String ident;
+		
+		protected KeyframesIdentImpl(String ident) {
+			this.ident = ident;
+		}
+		
+		@Override
+		public String toString() {
+			return ident;
+		}
 		
 		public String getIdent() {
     		return ident;

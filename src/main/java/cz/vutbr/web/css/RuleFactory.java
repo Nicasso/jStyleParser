@@ -36,6 +36,8 @@ public interface RuleFactory {
 	RuleNameSpace createNameSpace(String prefix, String uri);
 	
 	RuleCounterStyle createCounterStyle(String name);
+	
+	RuleKeyframes createKeyframes(String name);
 
 	/**
 	 * Creates CSS rule set, that is collection of CSS declarations
@@ -143,6 +145,10 @@ public interface RuleFactory {
 	 * @return New CSS element ID selector part
 	 */
 	Selector.ElementID createID(String id);
+	
+	Selector.KeyframesIdent createKeyFramesIdent(String ident);
+	
+	Selector.KeyframesPercentage createKeyFramesPercentage(String percentage);
 
 	/**
 	 * Creates CSS selector part, pseudo page

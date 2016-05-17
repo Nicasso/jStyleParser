@@ -1,3 +1,4 @@
+/*
 @-webkit-keyframes fadeInFlashlight {
     from {
         opacity: 0;
@@ -8,15 +9,18 @@
         color: green;
     }
 }
-
+*/
 @keyframes fadeInFlashlight {
     0% {
         opacity: 0;
+    }
+    25%, 75% {
+        opacity: 0.25;
     }
     50% {
         opacity: 0.5;
     }
     100% {
-        opacity: 1;
+        opacity: 1.0;
     }
 }

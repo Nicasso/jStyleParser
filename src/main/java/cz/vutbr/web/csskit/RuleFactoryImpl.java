@@ -14,6 +14,7 @@ import cz.vutbr.web.css.RuleCounterStyle;
 import cz.vutbr.web.css.RuleFactory;
 import cz.vutbr.web.css.RuleFontFace;
 import cz.vutbr.web.css.RuleImport;
+import cz.vutbr.web.css.RuleKeyframes;
 import cz.vutbr.web.css.RuleMargin;
 import cz.vutbr.web.css.RuleMedia;
 import cz.vutbr.web.css.RuleNameSpace;
@@ -26,6 +27,8 @@ import cz.vutbr.web.css.Selector.ElementClass;
 import cz.vutbr.web.css.Selector.ElementDOM;
 import cz.vutbr.web.css.Selector.ElementID;
 import cz.vutbr.web.css.Selector.ElementName;
+import cz.vutbr.web.css.Selector.KeyframesIdent;
+import cz.vutbr.web.css.Selector.KeyframesPercentage;
 import cz.vutbr.web.css.Selector.Operator;
 import cz.vutbr.web.css.Selector.PseudoPage;
 import cz.vutbr.web.css.StyleSheet;
@@ -178,5 +181,20 @@ public class RuleFactoryImpl implements RuleFactory {
 	@Override
 	public RuleCounterStyle createCounterStyle(String name) {
 		return new RuleCounterStyleImpl(name);
+	}
+
+	@Override
+	public KeyframesIdent createKeyFramesIdent(String ident) {
+		return new SelectorImpl.KeyframesIdentImpl(ident);
+	}
+
+	@Override
+	public KeyframesPercentage createKeyFramesPercentage(String percentage) {
+		return new SelectorImpl.KeyframesPercentageImpl(percentage);
+	}
+
+	@Override
+	public RuleKeyframes createKeyframes(String name) {
+		return new RuleKeyframesImpl(name);
 	}
 }

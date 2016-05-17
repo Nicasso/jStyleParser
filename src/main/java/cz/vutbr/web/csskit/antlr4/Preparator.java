@@ -100,4 +100,6 @@ public interface Preparator {
     
     public RuleCharset prepareRuleCharset(String charset);
     
+    public RuleBlock<?> prepareRuleKeyFrames(String name, List<RuleSet> rules);
+    
 }
