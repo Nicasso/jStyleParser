@@ -21,6 +21,19 @@ public class MediaQueryImpl extends AbstractRule<MediaExpression> implements Med
 {
     protected boolean negative;
     protected String type;
+    protected String state;
+    
+	@Override
+	public String getState() {
+		return state;
+	}
+	
+	@Override
+    public void setState(String state)
+    {
+        this.state = state;
+    }
+
     
     /**
 	 * Accept method required by the visitor pattern for traversing the CSS Tree. 

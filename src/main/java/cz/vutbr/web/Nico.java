@@ -61,21 +61,21 @@ public class Nico {
 	private void loadStylesheet(URL file) {
 
 		StyleSheet style = null;
-
+		
 		if (file == null) {
 			try {
 				style = CSSFactory.parse("style.css", "UTF-8");
-				if (style.getComment() != null) {
-					System.out.println("Stylesheet comment: " + style.getComment().getText());
-					System.out.println("Stylesheet comment location: " + style.getComment().getLocation().toString());
-				}
-				System.out.println("----------------------------");
-				System.out.println("ERRORS: " + style.getCSSErrors().size());
-				for (int i = 0; i < style.getCSSErrors().size(); i++) {
-					System.out.println(style.getCSSErrors().get(i).getMessage() + " - "
-							+ style.getCSSErrors().get(i).getLocation().toString());
-				}
-				rulesBlock(style);
+//				if (style.getComment() != null) {
+//					System.out.println("Stylesheet comment: " + style.getComment().getText());
+//					System.out.println("Stylesheet comment location: " + style.getComment().getLocation().toString());
+//				}
+//				System.out.println("----------------------------");
+//				System.out.println("ERRORS: " + style.getCSSErrors().size());
+//				for (int i = 0; i < style.getCSSErrors().size(); i++) {
+//					System.out.println(style.getCSSErrors().get(i).getMessage() + " - "
+//							+ style.getCSSErrors().get(i).getLocation().toString());
+//				}
+//				rulesBlock(style);
 			} catch (CSSException | IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -102,7 +102,10 @@ public class Nico {
 				System.out.println("ruleBlock comment location: " + ruleBlock.getComment().getLocation().toString());
 			}
 
-			if (ruleBlock instanceof RuleSet) {
+			if (ruleBlock instanceof RulePage) {
+				System.out.println("");
+				rulePage(ruleBlock);
+			} else if (ruleBlock instanceof RuleSet) {
 				System.out.println("");
 				System.out.println("RULE: " + ruleBlock.getLocation().toString());
 				ruleSet(ruleBlock);
@@ -118,10 +121,6 @@ public class Nico {
 				System.out.println("");
 				System.out.println("RULE: " + ruleBlock.getLocation().toString());
 				ruleMargin(ruleBlock);
-			} else if (ruleBlock instanceof RulePage) {
-				System.out.println("");
-				System.out.println("RULE: " + ruleBlock.getLocation().toString());
-				rulePage(ruleBlock);
 			} else if (ruleBlock instanceof RuleViewport) {
 				System.out.println("");
 				System.out.println("RULE: " + ruleBlock.getLocation().toString());
@@ -200,21 +199,22 @@ public class Nico {
 
 	private void mediaQuery(List<MediaQuery> list) {
 		for (MediaQuery m : list) {
-			System.out.println("MEDIAQUERY: " + m.getType() + " - " + m.toString());
+			System.out.println("MEDIAQUERY TYPE: " + m.getType());
 			mediaExpression(m);
 		}
 	}
 
 	private void mediaExpression(MediaQuery m) {
 		for (MediaExpression a : m) {
-			System.out.println("MEDIAEXPRESSION: " + a.getFeature() + " - " + a.toString());
+			System.out.println("MEDIAEXPRESSION: " + a.getFeature());
 			mediaTerms(a);
 		}
 	}
 
 	private void mediaTerms(MediaExpression m) {
 		for (Term a : m) {
-			System.out.println("(MEDIA)TERMS: " + a.toString());
+			System.out.println("mediaTerms operator: " + a.getOperator());
+			System.out.println("mediaTerms value: " + a.getValue());
 			terms(a);
 		}
 	}
@@ -239,6 +239,8 @@ public class Nico {
 		System.out.println("");
 		System.out.println("This is a ruleImport");
 		System.out.println(ruleBlock.getURI());
+		
+		mediaQuery(ruleBlock.getMediaQueries());
 	}
 
 	private void ruleMargin(RuleBlock<?> ruleBlock) {
@@ -400,6 +402,8 @@ public class Nico {
 			System.out.println("    Time: " + term.getValue());
 		} else if (term instanceof TermURI) {
 			System.out.println("    URI: " + term.getValue());
+		} else {
+			System.out.println("    SOMETHING ELSE: " + term.getValue());
 		}
 	}
 

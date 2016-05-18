@@ -37,6 +37,9 @@ public interface MediaQuery extends Rule<MediaExpression>
      */
     public String getType();
     
+    public void setState(String state);
+    public String getState();
+    
     public void setLocation(CodeLocation location);
     
     public CodeLocation getLocation();

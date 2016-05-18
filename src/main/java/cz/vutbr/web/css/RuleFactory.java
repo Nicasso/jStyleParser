@@ -1,5 +1,7 @@
 package cz.vutbr.web.css;
 
+import java.util.List;
+
 import org.w3c.dom.Element;
 
 import cz.vutbr.web.css.Selector.Operator;
@@ -27,9 +29,10 @@ public interface RuleFactory {
 
 	/**
 	 * Creates CSS import rule
+	 * @param importMediaQueryList 
 	 * @return New CSS import rule
 	 */
-	RuleImport createImport(String uri);
+	RuleImport createImport(String uri, List<MediaQuery> importMediaQueryList);
 	
 	RuleCharset createCharset(String charset);
 	

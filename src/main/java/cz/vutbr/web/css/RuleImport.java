@@ -1,5 +1,6 @@
 package cz.vutbr.web.css;
 
+import java.util.List;
 
 /**
  * Contains imports associated with medias. Acts as collection
@@ -14,6 +15,8 @@ public interface RuleImport extends RuleBlock<String>, PrettyOutput {
 	 * @return URI of file to be imported
 	 */
     public String getURI();
+    
+    public List<MediaQuery> getMediaQueries();
 
     /**
      * Sets URI of import rule

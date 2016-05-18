@@ -1,6 +1,10 @@
 package cz.vutbr.web.csskit;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import cz.vutbr.web.css.CSSNodeVisitor;
+import cz.vutbr.web.css.MediaQuery;
 import cz.vutbr.web.css.RuleImport;
 
 /**
@@ -15,6 +19,7 @@ public class RuleImportImpl extends AbstractRuleBlock<String> implements RuleImp
   
 	/** URI of file to be imported */
     protected String uri;
+    protected List<MediaQuery> importMediaQueryList;
     
     /** 
      * Creates empty RuleImport instance
@@ -22,16 +27,25 @@ public class RuleImportImpl extends AbstractRuleBlock<String> implements RuleImp
     protected RuleImportImpl() {
     	super();
     	this.uri = "";
+    	this.importMediaQueryList = new ArrayList<MediaQuery>();
     }
     
-    protected RuleImportImpl(String uri) {
+    protected RuleImportImpl(String uri, List<MediaQuery> importMediaQueryList) {
     	super();
     	this.uri = uri;
+    	this.importMediaQueryList = importMediaQueryList;
     }
     
     public String getURI() {
         return uri;
     }
+    
+    @Override
+	public List<MediaQuery> getMediaQueries() {
+		return importMediaQueryList;
+	}
+    
+    
     
     /**
 	 * Accept method required by the visitor pattern for traversing the CSS Tree. 
@@ -111,6 +125,6 @@ public class RuleImportImpl extends AbstractRuleBlock<String> implements RuleImp
 		} else if (!uri.equals(other.uri))
 			return false;
 		return true;
-	}    
+	}
 
 }

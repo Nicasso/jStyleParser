@@ -186,13 +186,13 @@ public class SimplePreparator implements Preparator {
 	}
 
 	@Override
-	public RuleImport prepareRuleImport(String uri) {
+	public RuleImport prepareRuleImport(String uri, List<MediaQuery> importMediaQueryList) {
 		if (uri == null | uri.isEmpty()) {
 			log.debug("Empty RuleImport was ommited");
 			return null;
 		}
 		
-		RuleImport rp = rf.createImport(uri);
+		RuleImport rp = rf.createImport(uri, importMediaQueryList);
 		log.info("Create @import");
 		
 		return (RuleImport) rp;

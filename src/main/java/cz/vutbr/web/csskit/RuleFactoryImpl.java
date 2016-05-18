@@ -3,6 +3,8 @@
  */
 package cz.vutbr.web.csskit;
 
+import java.util.List;
+
 import org.w3c.dom.Element;
 
 import cz.vutbr.web.css.CombinedSelector;
@@ -70,8 +72,8 @@ public class RuleFactoryImpl implements RuleFactory {
 	/* (non-Javadoc)
 	 * @see cz.vutbr.web.css.RuleFactory#createImport()
 	 */
-	public RuleImport createImport(String uri) {
-		return new RuleImportImpl(uri);
+	public RuleImport createImport(String uri, List<MediaQuery> importMediaQueryList) {
+		return new RuleImportImpl(uri, importMediaQueryList);
 	}
 
 	/* (non-Javadoc)

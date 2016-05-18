@@ -54,7 +54,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 	private TermFactory tf = CSSFactory.getTermFactory();
 
 	private enum MediaQueryState {
-		START, TYPE, AND, EXPR, TYPEOREXPR
+		START, TYPE, AND, OR, EXPR, TYPEOREXPR
 	}
 
 	// structures after parsing
@@ -73,9 +73,6 @@ public class CSSParserListenerImpl implements CSSParserListener {
 	private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
 
 	// temp variables for construction
-	private Selector tmpKeyframeSelector;
-	private List<Selector> tmpKeyframeSelectorList;
-
 	private CombinedSelector tmpCombinedSelector;
 	private boolean tmpCombinedSelectorInvalid;
 	private Selector tmpSelector;
@@ -282,7 +279,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 	}
 
 	private void logLeave(String leaving) {
-		// System.out.println("Exit: "+leaving);
+		System.out.println("Exit: "+leaving);
 		log.trace("Leave: " + generateSpaces(spacesCounter) + "{}", leaving);
 	}
 
@@ -1102,7 +1099,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 	public void exitAtstatement(CSSParser.AtstatementContext ctx) {
 		log.debug("exit atstatement: " + ctx.getText());
 		if (ctxHasErrorNode(ctx)) {
-			log.debug("atstatement is not valid ");
+			log.debug("atstatement is not valid");
 			addCSSError(ctx, "Syntax error: " + ctx.getText());
 			return;
 		}
@@ -1113,7 +1110,22 @@ public class CSSParserListenerImpl implements CSSParserListener {
 			this.preventImports = true;
 		} else if (ctx.IMPORT() != null) {
 			String iuri = ctx.import_uri().getText();
-			tmpAtStatementOrRuleSetScope.stm = preparator.prepareRuleImport(iuri);
+			
+			//List<MediaQuery> importMediaQueryList = new ArrayList<>();
+			
+			if (ctx.media() == null) {
+				// media is not set, set empty
+				mediaQueryList = new ArrayList<>();
+			}
+			List<RuleSet> mediaRulesList = new ArrayList<>();
+			if (ctx.media_rule() != null) {
+				for (RuleBlock<?> rule : tmpRuleList) {
+					mediaRulesList.add((RuleSet) rule);
+				}
+
+			}
+			
+			tmpAtStatementOrRuleSetScope.stm = preparator.prepareRuleImport(iuri, mediaQueryList);
 			tmpAtStatementOrRuleSetScope.stm.setLocation(getCodeLocation(ctx, 0));
 			this.preventImports = true;
 		} else if (ctx.NAMESPACE() != null) {
@@ -1169,9 +1181,6 @@ public class CSSParserListenerImpl implements CSSParserListener {
 			this.preventImports = true;
 		} else if (ctx.KEYFRAMES() != null) {
 			log.debug("exitAtstatement KEYFRAMES");
-			if (ctx.keyframes_block() == null) {
-				tmpKeyframeSelectorList = new ArrayList<>();
-			}
 
 			List<RuleSet> keyFrameList = new ArrayList<>();
 			if (ctx.keyframes_block() != null) {
@@ -1213,15 +1222,14 @@ public class CSSParserListenerImpl implements CSSParserListener {
 
 	@Override
 	public void exitPage(CSSParser.PageContext ctx) {
-		String name = null, pseudo = null;
-		if (ctx.IDENT() != null) {
-			name = extractTextUnescaped(ctx.IDENT().getText());
+		String name = null;
+		
+		if (ctx.IDENT() != null && ctx.COLON() != null) {
+			name = (ctx.IDENT().getText());
 		}
-		if (ctx.page_pseudo() != null) {
-			pseudo = extractTextUnescaped(ctx.page_pseudo().getText());
-		}
-
-		RuleBlock<?> rb = preparator.prepareRulePage(tmpDeclarations, tmpMargins, name, pseudo);
+		
+		RuleBlock<?> rb = preparator.prepareRulePage(tmpDeclarations, tmpMargins, name, ":");
+		rb.setLocation(getCodeLocation(ctx, 0));
 		if (rb != null) {
 			rules.add(rb);
 		}
@@ -1294,7 +1302,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 
 	@Override
 	public void exitMedia_query(CSSParser.Media_queryContext ctx) {
-		logLeave("exitMedia_query1");
+		logLeave("Media_query");
 		if (tmpMediaQueryScope.invalid) {
 			/// mediaquery invalid add NOT ALL
 			tmpMediaQueryScope.q = rf.createMediaQuery();
@@ -1314,23 +1322,35 @@ public class CSSParserListenerImpl implements CSSParserListener {
 		stmtIsValid = true;
 		if (ctx.IDENT() != null) {
 			log.debug("mediaterm ident");
-			String m = extractTextUnescaped(ctx.IDENT().getText());
+			/*
+			
 			MediaQueryState state = tmpMediaQueryScope.state;
 			if (m.equalsIgnoreCase("ONLY") && state == MediaQueryState.START) {
 				tmpMediaQueryScope.state = MediaQueryState.TYPEOREXPR;
+				tmpMediaQueryScope.q.setState("only");
 			} else if (m.equalsIgnoreCase("NOT") && state == MediaQueryState.START) {
 				tmpMediaQueryScope.q.setNegative(true);
 				tmpMediaQueryScope.state = MediaQueryState.TYPEOREXPR;
+				tmpMediaQueryScope.q.setState("not");
 			} else if (m.equalsIgnoreCase("AND") && state == MediaQueryState.AND) {
 				tmpMediaQueryScope.state = MediaQueryState.EXPR;
+				tmpMediaQueryScope.q.setState("and");
+			} else if (m.equalsIgnoreCase("OR") && state == MediaQueryState.OR) {
+				
+			} else if (m.equalsIgnoreCase("NOT")) {
+				System.out.println("DRTYUIOIUYTRF");
+				tmpMediaQueryScope.q.setState("not");
 			} else if (state == MediaQueryState.START || state == MediaQueryState.TYPE
 					|| state == MediaQueryState.TYPEOREXPR) {
 				tmpMediaQueryScope.q.setType(m);
 				tmpMediaQueryScope.state = MediaQueryState.AND;
+				tmpMediaQueryScope.q.setState("and");
 			} else {
 				log.debug("Invalid media query: found ident: {} state: {}", m, state);
 				tmpMediaQueryScope.invalid = true;
-			}
+			}*/
+			String m = extractTextUnescaped(ctx.IDENT().getText());
+			tmpMediaQueryScope.q.setType(m);
 			tmpMediaQueryScope.q.setLocation(getCodeLocation(ctx, 0));
 		} else if (ctx.media_expression() != null) {
 			// in enterMedia_expression

@@ -89,10 +89,11 @@ public interface Preparator {
     
     /**
      * Creates RuleImport 
+     * @param importMediaQueryList 
      * @param the uri
      * @return RuleImport
      */
-    public RuleImport prepareRuleImport(String uri);
+    public RuleImport prepareRuleImport(String uri, List<MediaQuery> importMediaQueryList);
     
     public RuleNameSpace prepareRuleNamespace(String prefix, String uri);
     
