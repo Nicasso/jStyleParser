@@ -93,7 +93,7 @@ public class TermFactoryImpl implements TermFactory {
 	    if (!dash)
 	        return (TermIdent) (new TermIdentImpl()).setValue(value);
 	    else
-            return (TermIdent) (new TermIdentImpl()).setValue("-" + value);
+            return (TermIdent) (new TermIdentImpl()).setValue(/*"-" + */value);
 	}
 
 	public TermInteger createInteger(Integer value) {

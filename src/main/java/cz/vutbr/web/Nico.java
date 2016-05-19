@@ -61,21 +61,21 @@ public class Nico {
 	private void loadStylesheet(URL file) {
 
 		StyleSheet style = null;
-		
+
 		if (file == null) {
 			try {
 				style = CSSFactory.parse("style.css", "UTF-8");
-//				if (style.getComment() != null) {
-//					System.out.println("Stylesheet comment: " + style.getComment().getText());
-//					System.out.println("Stylesheet comment location: " + style.getComment().getLocation().toString());
-//				}
-//				System.out.println("----------------------------");
-//				System.out.println("ERRORS: " + style.getCSSErrors().size());
-//				for (int i = 0; i < style.getCSSErrors().size(); i++) {
-//					System.out.println(style.getCSSErrors().get(i).getMessage() + " - "
-//							+ style.getCSSErrors().get(i).getLocation().toString());
-//				}
-//				rulesBlock(style);
+				if (style.getComment() != null) {
+					System.out.println("Stylesheet comment: " + style.getComment().getText());
+					System.out.println("Stylesheet comment location: " + style.getComment().getLocation().toString());
+				}
+				System.out.println("----------------------------");
+				System.out.println("ERRORS: " + style.getCSSErrors().size());
+				for (int i = 0; i < style.getCSSErrors().size(); i++) {
+					System.out.println(style.getCSSErrors().get(i).getMessage() + " - "
+							+ style.getCSSErrors().get(i).getLocation().toString());
+				}
+				rulesBlock(style);
 			} catch (CSSException | IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -200,6 +200,7 @@ public class Nico {
 	private void mediaQuery(List<MediaQuery> list) {
 		for (MediaQuery m : list) {
 			System.out.println("MEDIAQUERY TYPE: " + m.getType());
+			System.out.println("MEDIAQUERY STATE: " + m.getState());
 			mediaExpression(m);
 		}
 	}
@@ -357,6 +358,7 @@ public class Nico {
 	}
 
 	private void terms(Term<?> term) {
+		System.out.println("TERMS OPERATOR: "+term.getOperator());
 		if (term instanceof TermAngle) {
 			System.out.println("    Angle: " + term.getValue());
 		} else if (term instanceof TermAudio) {
@@ -365,7 +367,17 @@ public class Nico {
 			System.out.println(a.getUnit());
 		} else if (term instanceof TermColor) {
 			System.out.println("    Color: " + term.toString() + " - " + term.getValue() + " - " + term.getOperator());
-			System.out.println(((TermColor) term).getOriginalFormat());
+			TermColor t = (TermColor) term;
+			
+			String hex;
+			System.out.println(t.getValue().getAlpha());
+			if (t.getValue().getAlpha() == 255) {
+				hex = String.format("#%02x%02x%02x", t.getValue().getRed(), t.getValue().getGreen(), t.getValue().getBlue());
+			} else {
+				hex = String.format("#%02x%02x%02x%02x", t.getValue().getRed(), t.getValue().getGreen(), t.getValue().getBlue(), t.getValue().getAlpha());
+			}
+			
+			System.out.println(hex);
 		} else if (term instanceof TermExpression) {
 			System.out.println("    Expression: " + term.getValue());
 		} else if (term instanceof TermCalc) {

@@ -46,6 +46,7 @@ import cz.vutbr.web.csskit.antlr4.CSSParser.CommentContext;
 import cz.vutbr.web.csskit.antlr4.CSSParser.Keyframe_selectorContext;
 import cz.vutbr.web.csskit.antlr4.CSSParser.Keyframe_selectorsContext;
 import cz.vutbr.web.csskit.antlr4.CSSParser.Keyframes_blockContext;
+import cz.vutbr.web.csskit.antlr4.CSSParser.OperatorContext;
 
 public class CSSParserListenerImpl implements CSSParserListener {
 
@@ -54,7 +55,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 	private TermFactory tf = CSSFactory.getTermFactory();
 
 	private enum MediaQueryState {
-		START, TYPE, AND, OR, EXPR, TYPEOREXPR
+		START, TYPE, AND, EXPR, TYPEOREXPR
 	}
 
 	// structures after parsing
@@ -73,6 +74,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 	private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
 
 	// temp variables for construction
+	private Term.Operator tmpOperator;
 	private CombinedSelector tmpCombinedSelector;
 	private boolean tmpCombinedSelectorInvalid;
 	private Selector tmpSelector;
@@ -279,7 +281,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 	}
 
 	private void logLeave(String leaving) {
-		System.out.println("Exit: "+leaving);
+		System.out.println("Exit: " + leaving);
 		log.trace("Leave: " + generateSpaces(spacesCounter) + "{}", leaving);
 	}
 
@@ -483,7 +485,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 		terms_stack.push(new terms_scope());
 		terms_stack.peek().list = new ArrayList<>();
 		terms_stack.peek().term = null;
-		terms_stack.peek().op = null;
+		terms_stack.peek().op = Term.Operator.SPACE;
 		terms_stack.peek().unary = 1;
 		terms_stack.peek().dash = false;
 
@@ -500,6 +502,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 		log.debug("Totally added {} terms", tmpTermList.size());
 		terms_stack.pop();
 		logLeave("terms");
+		tmpOperator = null;
 	}
 
 	@Override
@@ -617,10 +620,13 @@ public class CSSParserListenerImpl implements CSSParserListener {
 			terms_stack.peek().unary = -1;
 			terms_stack.peek().dash = true;
 		}
+		terms_stack.peek().op = tmpOperator;
 		if (ctx.COMMA() != null) {
 			log.debug("VP - comma");
+			System.out.println("COMMAAAAAAAAAAAAAAAAAAAAA");
 			terms_stack.peek().op = Term.Operator.COMMA;
 		} else if (ctx.SLASH() != null) {
+			System.out.println("SLASSSSSSSSSSSSH");
 			terms_stack.peek().op = Term.Operator.SLASH;
 		} else if (ctx.string() != null) {
 			// string
@@ -708,6 +714,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 			terms_stack.peek().list.add(terms_stack.peek().term);
 			// reinitialization
 			terms_stack.peek().op = Term.Operator.SPACE;
+			tmpOperator = Term.Operator.SPACE;
 			terms_stack.peek().unary = 1;
 			terms_stack.peek().dash = false;
 			terms_stack.peek().term = null;
@@ -1110,9 +1117,9 @@ public class CSSParserListenerImpl implements CSSParserListener {
 			this.preventImports = true;
 		} else if (ctx.IMPORT() != null) {
 			String iuri = ctx.import_uri().getText();
-			
-			//List<MediaQuery> importMediaQueryList = new ArrayList<>();
-			
+
+			// List<MediaQuery> importMediaQueryList = new ArrayList<>();
+
 			if (ctx.media() == null) {
 				// media is not set, set empty
 				mediaQueryList = new ArrayList<>();
@@ -1124,7 +1131,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 				}
 
 			}
-			
+
 			tmpAtStatementOrRuleSetScope.stm = preparator.prepareRuleImport(iuri, mediaQueryList);
 			tmpAtStatementOrRuleSetScope.stm.setLocation(getCodeLocation(ctx, 0));
 			this.preventImports = true;
@@ -1223,11 +1230,11 @@ public class CSSParserListenerImpl implements CSSParserListener {
 	@Override
 	public void exitPage(CSSParser.PageContext ctx) {
 		String name = null;
-		
+
 		if (ctx.IDENT() != null && ctx.COLON() != null) {
 			name = (ctx.IDENT().getText());
 		}
-		
+
 		RuleBlock<?> rb = preparator.prepareRulePage(tmpDeclarations, tmpMargins, name, ":");
 		rb.setLocation(getCodeLocation(ctx, 0));
 		if (rb != null) {
@@ -1302,7 +1309,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 
 	@Override
 	public void exitMedia_query(CSSParser.Media_queryContext ctx) {
-		logLeave("Media_query");
+		logLeave("exitMedia_query1");
 		if (tmpMediaQueryScope.invalid) {
 			/// mediaquery invalid add NOT ALL
 			tmpMediaQueryScope.q = rf.createMediaQuery();
@@ -1322,35 +1329,23 @@ public class CSSParserListenerImpl implements CSSParserListener {
 		stmtIsValid = true;
 		if (ctx.IDENT() != null) {
 			log.debug("mediaterm ident");
-			/*
-			
+			String m = extractTextUnescaped(ctx.IDENT().getText());
 			MediaQueryState state = tmpMediaQueryScope.state;
 			if (m.equalsIgnoreCase("ONLY") && state == MediaQueryState.START) {
 				tmpMediaQueryScope.state = MediaQueryState.TYPEOREXPR;
-				tmpMediaQueryScope.q.setState("only");
 			} else if (m.equalsIgnoreCase("NOT") && state == MediaQueryState.START) {
 				tmpMediaQueryScope.q.setNegative(true);
 				tmpMediaQueryScope.state = MediaQueryState.TYPEOREXPR;
-				tmpMediaQueryScope.q.setState("not");
 			} else if (m.equalsIgnoreCase("AND") && state == MediaQueryState.AND) {
 				tmpMediaQueryScope.state = MediaQueryState.EXPR;
-				tmpMediaQueryScope.q.setState("and");
-			} else if (m.equalsIgnoreCase("OR") && state == MediaQueryState.OR) {
-				
-			} else if (m.equalsIgnoreCase("NOT")) {
-				System.out.println("DRTYUIOIUYTRF");
-				tmpMediaQueryScope.q.setState("not");
 			} else if (state == MediaQueryState.START || state == MediaQueryState.TYPE
 					|| state == MediaQueryState.TYPEOREXPR) {
 				tmpMediaQueryScope.q.setType(m);
 				tmpMediaQueryScope.state = MediaQueryState.AND;
-				tmpMediaQueryScope.q.setState("and");
 			} else {
 				log.debug("Invalid media query: found ident: {} state: {}", m, state);
 				tmpMediaQueryScope.invalid = true;
-			}*/
-			String m = extractTextUnescaped(ctx.IDENT().getText());
-			tmpMediaQueryScope.q.setType(m);
+			}
 			tmpMediaQueryScope.q.setLocation(getCodeLocation(ctx, 0));
 		} else if (ctx.media_expression() != null) {
 			// in enterMedia_expression
@@ -1583,11 +1578,11 @@ public class CSSParserListenerImpl implements CSSParserListener {
 		// TODO Auto-generated method stub
 
 	}
-	
+
 	@Override
 	public void enterKeyframe_selectors(Keyframe_selectorsContext ctx) {
 		logEnter("keyframes_selectors: " + ctx.getText());
-		
+
 		tmpCombinedSelectorInvalid = false;
 		tmpCombinedSelector = (CombinedSelector) rf.createCombinedSelector().unlock();
 		tmpCombinedSelector.setLocation(getCodeLocation(ctx, 0));
@@ -1604,7 +1599,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 		}
 		tmpCombinator = null;
 	}
-	
+
 	@Override
 	public void enterKeyframe_selector(Keyframe_selectorContext ctx) {
 		logEnter("keyframes_selector: " + ctx.getText());
@@ -1616,11 +1611,12 @@ public class CSSParserListenerImpl implements CSSParserListener {
 			elem.setLocation(getCodeLocation(ctx, 0));
 			tmpSelector.add(elem);
 		} else if (ctx.PERCENTAGE() != null) {
-			Selector.KeyframesPercentage elem = rf.createKeyFramesPercentage(ctx.getText().substring(0, ctx.getText().length()-1));
+			Selector.KeyframesPercentage elem = rf
+					.createKeyFramesPercentage(ctx.getText().substring(0, ctx.getText().length() - 1));
 			elem.setLocation(getCodeLocation(ctx, 0));
 			tmpSelector.add(elem);
 		}
-		
+
 		tmpSelector.setLocation(getCodeLocation(ctx, 0));
 
 	}
@@ -1650,6 +1646,25 @@ public class CSSParserListenerImpl implements CSSParserListener {
 		}
 		// cleanup tmpDeclarations
 		tmpDeclarations = null;
+	}
+
+	@Override
+	public void enterOperator(OperatorContext ctx) {
+		logEnter("Operator: '" + ctx.getText().trim()+"'");
+	}
+
+	@Override
+	public void exitOperator(OperatorContext ctx) {
+		logLeave("Operator: '" + ctx.getText().trim()+"'");
+		String op = ctx.getText().trim();
+		if (op.equals("/")) {
+			tmpOperator = Term.Operator.SLASH;
+		} else if(op.equals(",")) {
+			tmpOperator = Term.Operator.COMMA;
+		} else {
+			tmpOperator = Term.Operator.SPACE;
+		}
+		System.out.println("LEAVE OPERATOR: "+tmpOperator);
 	}
 
 }

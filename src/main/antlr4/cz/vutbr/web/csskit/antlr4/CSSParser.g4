@@ -264,7 +264,7 @@ declaration
       CSSLexerState begin = getCurrentLexerState(_localctx.getStart());
       log.debug("Decl begin: " + begin);
     }
-	: (S | comment)* property COLON S* terms? important? S* //-> ^(DECLARATION important? property terms?)
+	: (S | comment)* property COLON S* terms important? S* //-> ^(DECLARATION important? property terms?)
 	| (S | comment)* noprop any* S* //-> INVALID_DECLARATION /* if first character in the declaration is invalid (various dirty hacks) */
 	;
 	catch [RecognitionException re] {
@@ -297,9 +297,14 @@ property
     catch [RecognitionException re]{
         log.error("PARSING property ERROR | should be empty");
     }
+    
+operator
+  : SLASH S* 
+  | COMMA S*
+  ;
 
 terms
-	: term+
+	: term ( operator? term )*
 	//-> ^(VALUE term+)
 	;
     catch [RecognitionException re] {
