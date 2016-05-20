@@ -447,7 +447,7 @@ CALC
   
 /** Other Function beginning */	
 FUNCTION
-	: IDENT_MACR '('
+	: MINUS? IDENT_MACR '('
 	;
 
 INCLUDES

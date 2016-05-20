@@ -154,12 +154,15 @@ public class TermFactoryImpl implements TermFactory {
     }
 
 	public TermNumeric<Float> createDimension(String value, int unary) {
-
+		System.out.println("TERMNUMBERIC: "+value);
 	    //try {
     		for (TermNumeric.Unit unit : TermNumeric.Unit.values()) {
     			// try to find valid unit identifier
     			if (value.matches("^-?[0-9]*\\.?[0-9]+" + unit.value() + "$")) {
+    				System.out.println("JA");
     				Float f = convertFloat(value, unit.value(), unary);
+    				System.out.println("F:"+f);
+    				System.out.println("UNIT: "+unit);
     				if (unit.isAngle())
     					return (TermNumeric<Float>) (new TermAngleImpl()).setUnit(
     							unit).setValue(f);

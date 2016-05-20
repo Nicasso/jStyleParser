@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
+import org.abego.treelayout.internal.util.java.lang.string.StringUtil;
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
@@ -13,6 +14,7 @@ import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.antlr.v4.runtime.tree.TerminalNodeImpl;
+import org.codehaus.plexus.interpolation.util.StringUtils;
 
 import cz.vutbr.web.css.CSSComment;
 import cz.vutbr.web.css.CSSFactory;
@@ -548,7 +550,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 			System.out.println(ctx.getText());
 			throw new UnsupportedOperationException("EXPRESSIONS are not allowed yet");
 			// todo
-		} else if (ctx.CALC() != null) {
+		} else if (ctx.CALC() != null || ctx.calcsum() != null) {
 			System.out.println("CALC HERE: " + ctx.getText());
 
 			TermCalc calc = tf.createCalc(ctx.calcsum().getText());
@@ -653,19 +655,31 @@ public class CSSParserListenerImpl implements CSSParserListener {
 		} else if (ctx.DIMENSION() != null) {
 			log.debug("VP - dimension");
 			String dim = text.trim();
-			terms_stack.peek().term = tf.createDimension(dim, terms_stack.peek().unary);
-			// TODO: IE HACK like padding: 5px 5px 5px 5px\0; BREAKS HERE!
-			System.out.println(terms_stack.peek().term);
-			System.out.println("-------------");
+			System.out.println(text);
 			System.out.println(ctx.getText());
-			System.out.println(dim);
-			terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
-			if (terms_stack.peek().term == null) {
-				log.info("Unable to create dimension from {}, unary {}", dim, terms_stack.peek().unary);
-				tmpDeclarationScope.invalid = true;
+			if (!text.trim().equals(ctx.getText().trim()) && isNumeric(dim)) {
+				terms_stack.peek().term = tf.createDimension(dim + "px", terms_stack.peek().unary);
+				terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
+				if (terms_stack.peek().term == null) {
+					log.info("Unable to create dimension from {}, unary {}", dim, terms_stack.peek().unary);
+					tmpDeclarationScope.invalid = true;
+				}
+			} else {
+				terms_stack.peek().term = tf.createDimension(dim, terms_stack.peek().unary);
+				// TODO: IE HACK like padding: 5px 5px 5px 5px\0; BREAKS HERE!
+				System.out.println(terms_stack.peek().term);
+				System.out.println("-------------");
+				System.out.println(ctx.getText());
+				System.out.println(dim);
+				terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
+				if (terms_stack.peek().term == null) {
+					log.info("Unable to create dimension from {}, unary {}", dim, terms_stack.peek().unary);
+					tmpDeclarationScope.invalid = true;
+				}
 			}
 		} else if (ctx.NUMBER() != null) {
 			log.debug("VP - number");
+			System.out.println("NUMBER");
 			terms_stack.peek().term = tf.createNumeric(text, terms_stack.peek().unary);
 			terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
 		} else if (ctx.URI() != null) {
@@ -681,6 +695,16 @@ public class CSSParserListenerImpl implements CSSParserListener {
 			terms_stack.peek().term = null;
 			tmpDeclarationScope.invalid = true;
 		}
+	}
+
+	public boolean isNumeric(final CharSequence cs) {
+		final int sz = cs.length();
+		for (int i = 0; i < sz; i++) {
+			if (Character.isDigit(cs.charAt(i)) == false) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override
@@ -1650,21 +1674,21 @@ public class CSSParserListenerImpl implements CSSParserListener {
 
 	@Override
 	public void enterOperator(OperatorContext ctx) {
-		logEnter("Operator: '" + ctx.getText().trim()+"'");
+		logEnter("Operator: '" + ctx.getText().trim() + "'");
 	}
 
 	@Override
 	public void exitOperator(OperatorContext ctx) {
-		logLeave("Operator: '" + ctx.getText().trim()+"'");
+		logLeave("Operator: '" + ctx.getText().trim() + "'");
 		String op = ctx.getText().trim();
 		if (op.equals("/")) {
 			tmpOperator = Term.Operator.SLASH;
-		} else if(op.equals(",")) {
+		} else if (op.equals(",")) {
 			tmpOperator = Term.Operator.COMMA;
 		} else {
 			tmpOperator = Term.Operator.SPACE;
 		}
-		System.out.println("LEAVE OPERATOR: "+tmpOperator);
+		System.out.println("LEAVE OPERATOR: " + tmpOperator);
 	}
 
 }

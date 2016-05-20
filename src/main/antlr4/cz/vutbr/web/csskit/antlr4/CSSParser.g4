@@ -351,10 +351,13 @@ funct
     }
     : EXPRESSION //-> EXPRESSION
     | CALC S* calcsum S* RPAREN //-> CALC
-	| FUNCTION S* terms? RPAREN //-> ^(FUNCTION terms?)
+	| FUNCTION S* (terms? | calcsum) S* RPAREN //-> ^(FUNCTION terms?)
 	;
     catch [RecognitionException re] {
         log.error("Recognition exception | funct | should be empty");
+        IntervalSet intervalSet = new IntervalSet(RCURLY,SEMICOLON);
+		this.getCSSErrorHandler().consumeUntil(this,intervalSet);
+		_localctx.addErrorNode(this.getTokenFactory().create(INVALID_STATEMENT,""));
     }
     
 calcsum 
