@@ -548,8 +548,37 @@ public class CSSParserListenerImpl implements CSSParserListener {
 			// EXPRESSION
 			System.out.println("EXPRESSION: ");
 			System.out.println(ctx.getText());
-			throw new UnsupportedOperationException("EXPRESSIONS are not allowed yet");
+//			System.out.println(ctx.actualExpression.toString());
+//			System.out.println(ctx.actualExpression.getText());
+//			System.out.println(ctx.actualExpression);
+			//throw new UnsupportedOperationException("EXPRESSIONS are not allowed yet");
 			// todo
+			TermFunction function = tf.createFunction();
+			// log.debug("function name to " + fname);
+			function.setFunctionName("expression");
+			if (terms_stack.peek().unary == -1) // if started with minus,
+												// add the minus to the
+												// function name
+				function.setFunctionName('-' + function.getFunctionName());
+
+			TermString val = tf.createString(ctx.getText());
+			val.setLocation(getCodeLocation(ctx, 0));
+
+//			terms_stack.peek().list.add(terms_stack.peek().term);
+//			tmpTermList = terms_stack.peek().list;
+//			log.debug("Totally added {} terms", tmpTermList.size());
+//			terms_stack.pop();
+//			logLeave("terms");
+//			tmpOperator = null;
+//	
+			List<cz.vutbr.web.css.Term<?>> values = new ArrayList<>();
+			values.add(val);
+			function.setValue(values);
+			
+			terms_stack.peek().term = function;
+			terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
+			
+			log.debug("Setting function: {}", function.toString());
 		} else if (ctx.CALC() != null || ctx.calcsum() != null) {
 			System.out.println("CALC HERE: " + ctx.getText());
 

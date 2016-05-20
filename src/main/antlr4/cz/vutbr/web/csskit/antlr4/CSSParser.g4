@@ -349,7 +349,7 @@ funct
     @after {
         functLevel--;
     }
-    : EXPRESSION //-> EXPRESSION
+    : EXPRESSION  S* actualExpression = .*? S* RPAREN //-> EXPRESSION
     | CALC S* calcsum S* RPAREN //-> CALC
 	| FUNCTION S* (terms? | calcsum) S* RPAREN //-> ^(FUNCTION terms?)
 	;

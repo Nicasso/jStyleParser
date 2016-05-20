@@ -437,7 +437,6 @@ SL_COMMENT
 /** Expression function */
 EXPRESSION
   : 'expression('
-//  { er.read(); }
   ;
   
 /** Calc function */
