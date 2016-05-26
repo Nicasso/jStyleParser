@@ -48,7 +48,7 @@ public class SimplePreparator implements Preparator {
 		if ((cslist == null || cslist.isEmpty())
 				|| (dlist == null || dlist.isEmpty())) {
 			log.debug("Empty RuleSet was ommited");
-			return null;
+//			return null;
 		}
 
 		// create rule set

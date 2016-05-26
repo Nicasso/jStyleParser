@@ -335,8 +335,10 @@ public class CSSParserListenerImpl implements CSSParserListener {
 	@Override
 	public void exitStatement(CSSParser.StatementContext ctx) {
 		// statement: ruleset | atstatement
+		
 		if (ctx.ruleset() != null) {
 			if (stmtIsValid) {
+				System.out.println(tmpRuleList.size());
 				for (RuleBlock<?> rule : tmpRuleList) {
 					if (rule != null) {
 						if (tmpStatementComment != null) {
@@ -387,6 +389,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 		if (tmpAtStatementOrRuleSetScope.stm != null && !ctxHasErrorNode(ctx)) {
 			tmpAtStatementOrRuleSetScope.stm.setLocation(getCodeLocation(ctx, 0));
 			tmpRuleList.add(tmpAtStatementOrRuleSetScope.stm);
+			
 		}
 		// cleanup tmpDeclarations
 		tmpDeclarations = null;

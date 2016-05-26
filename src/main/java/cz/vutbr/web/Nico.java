@@ -93,7 +93,7 @@ public class Nico {
 	}
 
 	private void rulesBlock(Collection<RuleBlock<?>> rules) {
-		System.out.println("Collection<RuleBlock<?>>");
+		System.out.println("Collection<RuleBlock<?>>: "+rules.size());
 		for (RuleBlock<?> ruleBlock : rules) {
 
 			if (ruleBlock.getComment() != null) {
