@@ -79,7 +79,7 @@ public class SimplePreparator implements Preparator {
 
 		if (rules == null || rules.isEmpty()) {
 			log.debug("Empty RuleMedia was ommited");
-			return null;
+			//return null;
 		}
 
 		// create media at position of mark
@@ -98,7 +98,7 @@ public class SimplePreparator implements Preparator {
 	    if ((declarations == null || declarations.isEmpty()) &&
 	         (marginRules == null || marginRules.isEmpty())) {
 			log.debug("Empty RulePage was ommited");
-			return null;
+			//return null;
 		}
 
 		RulePage rp = rf.createPage();
@@ -251,7 +251,7 @@ public class SimplePreparator implements Preparator {
 		if (rules == null || rules.isEmpty()) {
 			log.debug("Empty RuleKeyFrames was ommited");
 			System.out.println("LOLAWL");
-			return null;
+			//return null;
 		}
 
 		RuleKeyframes rm = rf.createKeyframes(name);

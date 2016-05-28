@@ -35,7 +35,7 @@ public class TermTimeImpl extends TermFloatValueImpl implements TermTime {
 	@Override
 	public TermTime setValue(Float value) {
 		// value is negative
-		if(value==null || (new Float(0.0f)).compareTo(value) > 0)
+		if(value==null/* || (new Float(0.0f)).compareTo(value) > 0*/)
 				throw new IllegalArgumentException("Null or negative value for CSS time");
 		this.value = value;
 		return this;

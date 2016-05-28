@@ -167,7 +167,7 @@ public class Nico {
 
 	private void ruleSet(RuleBlock<?> ruleBlock) {
 		System.out.println("");
-		System.out.println("This is a ruleset");
+		System.out.println("This is a ruleset");		
 		RuleSet set = (RuleSet) ruleBlock;
 		selectors(set.getSelectors());
 
@@ -300,7 +300,7 @@ public class Nico {
 					System.out.println("NAME");
 					System.out.println(((ElementName) sp).getName());
 				} else {
-					System.out.println("EXOTIC ELEMENT");
+					System.out.println("EXOTIC ELEMENT: "+sp.toString());
 				}
 
 				System.out.println("COMBINATOR: " + s.getCombinator());
@@ -420,6 +420,7 @@ public class Nico {
 	}
 
 	private void selectors(CombinedSelector[] combinedSelectors) {
+		System.out.println("SELECTOORSS:");
 		for (CombinedSelector s : combinedSelectors) {
 			System.out.println(s);
 			realSelectors(s);

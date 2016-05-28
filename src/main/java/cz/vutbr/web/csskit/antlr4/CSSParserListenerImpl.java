@@ -384,12 +384,27 @@ public class CSSParserListenerImpl implements CSSParserListener {
 	public void exitRuleset(CSSParser.RulesetContext ctx) {
 		// logLeave("ruleset" +ctx.getText());
 		// complete ruleset and add to ruleList
-		tmpAtStatementOrRuleSetScope.stm = preparator.prepareRuleSet(tmpCombinedSelectorList, tmpDeclarations,
-				(this.wrapMedia != null && !this.wrapMedia.isEmpty()), this.wrapMedia);
-		if (tmpAtStatementOrRuleSetScope.stm != null && !ctxHasErrorNode(ctx)) {
-			tmpAtStatementOrRuleSetScope.stm.setLocation(getCodeLocation(ctx, 0));
-			tmpRuleList.add(tmpAtStatementOrRuleSetScope.stm);
+		
+		if(ctx.norule() == null) {
+		
+			tmpAtStatementOrRuleSetScope.stm = preparator.prepareRuleSet(tmpCombinedSelectorList, tmpDeclarations,
+					(this.wrapMedia != null && !this.wrapMedia.isEmpty()), this.wrapMedia);
 			
+			if (tmpAtStatementOrRuleSetScope.stm != null && !ctxHasErrorNode(ctx)) {
+				tmpAtStatementOrRuleSetScope.stm.setLocation(getCodeLocation(ctx, 0));
+				tmpRuleList.add(tmpAtStatementOrRuleSetScope.stm);
+				
+			}
+			
+			if (ctxHasErrorNode(ctx)) {
+				log.debug("invalidating ruleset");
+				addCSSError(ctx, "Syntax error: " + ctx.getText());
+			}
+		}
+		
+		if (ctxHasErrorNode(ctx)) {
+			log.debug("invalidating ruleset");
+			addCSSError(ctx, "Syntax error: " + ctx.getText());
 		}
 		// cleanup tmpDeclarations
 		tmpDeclarations = null;
@@ -470,7 +485,12 @@ public class CSSParserListenerImpl implements CSSParserListener {
 		logEnter("property: " + ctx.getText());
 		String property = extractTextUnescaped(ctx.IDENT().getText());
 		if (ctx.MINUS() != null) {
-			property = ctx.MINUS().getText() + property;
+			String newProp = "";
+			for(int i = 0; i < ctx.MINUS().size(); i++) {
+				newProp += "-";
+			}
+			newProp += property;
+			property = newProp;
 		}
 		tmpDeclarationScope.d.setProperty(property);
 		Token token = ctx.IDENT().getSymbol();
@@ -547,97 +567,104 @@ public class CSSParserListenerImpl implements CSSParserListener {
 
 	@Override
 	public void exitFunct(CSSParser.FunctContext ctx) {
-		if (ctx.EXPRESSION() != null) {
-			// EXPRESSION
-			System.out.println("EXPRESSION: ");
-			System.out.println(ctx.getText());
-//			System.out.println(ctx.actualExpression.toString());
-//			System.out.println(ctx.actualExpression.getText());
-//			System.out.println(ctx.actualExpression);
-			//throw new UnsupportedOperationException("EXPRESSIONS are not allowed yet");
-			// todo
-			TermFunction function = tf.createFunction();
-			// log.debug("function name to " + fname);
-			function.setFunctionName("expression");
-			if (terms_stack.peek().unary == -1) // if started with minus,
-												// add the minus to the
-												// function name
-				function.setFunctionName('-' + function.getFunctionName());
-
-			TermString val = tf.createString(ctx.getText());
-			val.setLocation(getCodeLocation(ctx, 0));
-
-//			terms_stack.peek().list.add(terms_stack.peek().term);
-//			tmpTermList = terms_stack.peek().list;
-//			log.debug("Totally added {} terms", tmpTermList.size());
-//			terms_stack.pop();
-//			logLeave("terms");
-//			tmpOperator = null;
-//	
-			List<cz.vutbr.web.css.Term<?>> values = new ArrayList<>();
-			values.add(val);
-			function.setValue(values);
-			
-			terms_stack.peek().term = function;
-			terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
-			
-			log.debug("Setting function: {}", function.toString());
-		} else if (ctx.CALC() != null || ctx.calcsum() != null) {
-			System.out.println("CALC HERE: " + ctx.getText());
-
-			TermCalc calc = tf.createCalc(ctx.calcsum().getText());
-			terms_stack.peek().term = calc;
-			terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
+		if (ctxHasErrorNode(ctx)) {
+			log.debug("invalidating terms");
+			addCSSError(ctx, "Syntax error: " + ctx.getText());
+			tmpDeclarationScope.invalid = true;
 		} else {
-			String fname = extractTextUnescaped(ctx.FUNCTION().getText());
-
-			if (fname.equalsIgnoreCase("url")) {
-				if (terms_stack.peek().unary == -1 || tmpTermList == null || tmpTermList.size() != 1) {
-					tmpDeclarationScope.invalid = true;
-				} else {
-					Term<?> term = tmpTermList.get(0);
-					if (term instanceof TermString) {
-						log.debug("creating url");
-						terms_stack.peek().term = tf.createURI(extractTextUnescaped(((TermString) term).getValue()),
-								extractBase(ctx.FUNCTION()));
-						terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
-					} else
-						tmpDeclarationScope.invalid = true;
-				}
-			} else if (fname.equalsIgnoreCase("rgb(")) {
-				TermFunction function = tf.createFunction();
-				function.setFunctionName("rgb");
-				function.setValue(tmpTermList);
-				TermColor color = TermColorImpl.getColorByFunction(function);
-				// color.setOriginalFormat(ctx.getText());
-				terms_stack.peek().term = color;
-				terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
-			} else if (fname.equalsIgnoreCase("rgba(")) {
-				TermFunction function = tf.createFunction();
-				function.setFunctionName("rgba");
-				function.setValue(tmpTermList);
-				TermColor color = TermColorImpl.getColorByFunction(function);
-				// color.setOriginalFormat(ctx.getText());
-				terms_stack.peek().term = color;
-				terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
-			} else {
+			if (ctx.EXPRESSION() != null) {
+				// EXPRESSION
+				System.out.println("EXPRESSION: ");
+				System.out.println(ctx.getText());
+	//			System.out.println(ctx.actualExpression.toString());
+	//			System.out.println(ctx.actualExpression.getText());
+	//			System.out.println(ctx.actualExpression);
+				//throw new UnsupportedOperationException("EXPRESSIONS are not allowed yet");
+				// todo
 				TermFunction function = tf.createFunction();
 				// log.debug("function name to " + fname);
-				function.setFunctionName(fname);
+				function.setFunctionName("expression");
 				if (terms_stack.peek().unary == -1) // if started with minus,
 													// add the minus to the
 													// function name
 					function.setFunctionName('-' + function.getFunctionName());
-				if (tmpTermList != null) {
-					// log.debug("setting function value to : {}", tmpTermList);
-					function.setValue(tmpTermList);
-				}
+	
+				TermString val = tf.createString(ctx.getText());
+				val.setLocation(getCodeLocation(ctx, 0));
+	
+	//			terms_stack.peek().list.add(terms_stack.peek().term);
+	//			tmpTermList = terms_stack.peek().list;
+	//			log.debug("Totally added {} terms", tmpTermList.size());
+	//			terms_stack.pop();
+	//			logLeave("terms");
+	//			tmpOperator = null;
+	//	
+				List<cz.vutbr.web.css.Term<?>> values = new ArrayList<>();
+				values.add(val);
+				function.setValue(values);
+				
 				terms_stack.peek().term = function;
 				terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
+				
 				log.debug("Setting function: {}", function.toString());
-
+			} else if (ctx.CALC() != null || ctx.calcsum() != null) {
+				System.out.println("CALC HERE: " + ctx.getText());
+	
+				TermCalc calc = tf.createCalc(ctx.calcsum().getText());
+				terms_stack.peek().term = calc;
+				terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
+			} else {
+				String fname = extractTextUnescaped(ctx.FUNCTION().getText());
+	
+				if (fname.equalsIgnoreCase("url")) {
+					if (terms_stack.peek().unary == -1 || tmpTermList == null || tmpTermList.size() != 1) {
+						tmpDeclarationScope.invalid = true;
+					} else {
+						Term<?> term = tmpTermList.get(0);
+						if (term instanceof TermString) {
+							log.debug("creating url");
+							terms_stack.peek().term = tf.createURI(extractTextUnescaped(((TermString) term).getValue()),
+									extractBase(ctx.FUNCTION()));
+							terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
+						} else
+							tmpDeclarationScope.invalid = true;
+					}
+				} else if (fname.equalsIgnoreCase("rgb(")) {
+					TermFunction function = tf.createFunction();
+					function.setFunctionName("rgb");
+					function.setValue(tmpTermList);
+					TermColor color = TermColorImpl.getColorByFunction(function);
+					// color.setOriginalFormat(ctx.getText());
+					terms_stack.peek().term = color;
+					terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
+				} else if (fname.equalsIgnoreCase("rgba(")) {
+					TermFunction function = tf.createFunction();
+					function.setFunctionName("rgba");
+					function.setValue(tmpTermList);
+					TermColor color = TermColorImpl.getColorByFunction(function);
+					// color.setOriginalFormat(ctx.getText());
+					terms_stack.peek().term = color;
+					terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
+				} else {
+					TermFunction function = tf.createFunction();
+					// log.debug("function name to " + fname);
+					function.setFunctionName(fname);
+					if (terms_stack.peek().unary == -1) // if started with minus,
+														// add the minus to the
+														// function name
+						function.setFunctionName('-' + function.getFunctionName());
+					if (tmpTermList != null) {
+						// log.debug("setting function value to : {}", tmpTermList);
+						function.setValue(tmpTermList);
+					}
+					terms_stack.peek().term = function;
+					terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
+					log.debug("Setting function: {}", function.toString());
+	
+				}
+				// function
 			}
-			// function
+		
 		}
 		logLeave("funct");
 	}
@@ -1131,11 +1158,12 @@ public class CSSParserListenerImpl implements CSSParserListener {
 	@Override
 	public void enterNorule(CSSParser.NoruleContext ctx) {
 		logEnter("norule: " + ctx.getText());
+		addCSSError(ctx, "Syntax error: " + ctx.getText());
 	}
 
 	@Override
 	public void exitNorule(CSSParser.NoruleContext ctx) {
-
+		
 	}
 
 	// <editor-fold desc="nomediaquery - done">
@@ -1244,16 +1272,22 @@ public class CSSParserListenerImpl implements CSSParserListener {
 			this.preventImports = true;
 		} else if (ctx.KEYFRAMES() != null) {
 			log.debug("exitAtstatement KEYFRAMES");
+			System.out.println("exitAtstatement KEYFRAMES");
 
 			List<RuleSet> keyFrameList = new ArrayList<>();
 			if (ctx.keyframes_block() != null) {
 				for (RuleBlock<?> rule : tmpRuleList) {
 					keyFrameList.add((RuleSet) rule);
 				}
-
 			}
 
 			tmpAtStatementOrRuleSetScope.stm = preparator.prepareRuleKeyFrames(ctx.name.getText(), keyFrameList);
+			
+			if (tmpStatementComment != null) {
+				tmpAtStatementOrRuleSetScope.stm.setComment(tmpStatementComment);
+				tmpStatementComment = null;
+			}
+			
 			tmpAtStatementOrRuleSetScope.stm.setLocation(getCodeLocation(ctx, 0));
 			this.preventImports = true;
 		} else {
@@ -1525,7 +1559,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 		String context = ctx.getParent().getClass().getSimpleName();
 		if (tmpStyleSheetComment == null && preventStyleSheetComment == false) {
 			tmpStyleSheetComment = new CommentImpl(ctx.getText(), location);
-		} else if (context.equals("StatementContext")) {
+		} else if (context.equals("StatementContext") || context.equals("Keyframes_blockContext")) {
 			tmpStatementComment = new CommentImpl(ctx.getText(), location);
 		} else if (context.equals("DeclarationContext")) {
 			tmpDeclarationComment = new CommentImpl(ctx.getText(), location);
@@ -1609,8 +1643,11 @@ public class CSSParserListenerImpl implements CSSParserListener {
 
 	@Override
 	public void exitCalcsum(CalcsumContext ctx) {
-		// TODO Auto-generated method stub
-
+		if (ctxHasErrorNode(ctx)) {
+			log.debug("invalidating terms");
+			addCSSError(ctx, "Syntax error: " + ctx.getText());
+			tmpDeclarationScope.invalid = true;
+		}
 	}
 
 	@Override
@@ -1620,8 +1657,11 @@ public class CSSParserListenerImpl implements CSSParserListener {
 
 	@Override
 	public void exitCalcproduct(CalcproductContext ctx) {
-		// TODO Auto-generated method stub
-
+		if (ctxHasErrorNode(ctx)) {
+			log.debug("invalidating terms");
+			addCSSError(ctx, "Syntax error: " + ctx.getText());
+			tmpDeclarationScope.invalid = true;
+		}
 	}
 
 	@Override
@@ -1631,8 +1671,11 @@ public class CSSParserListenerImpl implements CSSParserListener {
 
 	@Override
 	public void exitCalcvalue(CalcvalueContext ctx) {
-		// TODO Auto-generated method stub
-
+		if (ctxHasErrorNode(ctx)) {
+			log.debug("invalidating terms");
+			addCSSError(ctx, "Syntax error: " + ctx.getText());
+			tmpDeclarationScope.invalid = true;
+		}
 	}
 
 	@Override

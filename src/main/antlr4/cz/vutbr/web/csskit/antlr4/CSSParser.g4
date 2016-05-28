@@ -75,6 +75,9 @@ stylesheet
     ;
     catch [RecognitionException re] {
         log.error("Recognition exception | stylesheet | should be EMPTY");
+        IntervalSet intervalSet = new IntervalSet(COMMA, LCURLY,SEMICOLON);
+        getCSSErrorHandler().consumeUntil(this,intervalSet);
+        _localctx.addErrorNode(this.getTokenFactory().create(INVALID_STATEMENT,""));
     }
 
 statement
@@ -82,6 +85,9 @@ statement
     ;
     catch [RecognitionException re] {
         log.error("Recognition exception | statement | should be EMPTY");
+        IntervalSet intervalSet = new IntervalSet(COMMA, LCURLY,SEMICOLON);
+        getCSSErrorHandler().consumeUntil(this,intervalSet);
+        _localctx.addErrorNode(this.getTokenFactory().create(INVALID_STATEMENT,""));
     }
 
 atstatement
@@ -104,7 +110,7 @@ atstatement
      }
      
 keyframes_block
-	: keyframe_selectors LCURLY S* declarations S* RCURLY S*
+	: (comment | S)* keyframe_selectors LCURLY S* declarations (comment | S)* RCURLY S*
 	;
 
 keyframe_selectors
@@ -292,7 +298,7 @@ important
 
 //done
 property
-	: MINUS? IDENT S*
+	: MINUS* IDENT S*
 	;
     catch [RecognitionException re]{
         log.error("PARSING property ERROR | should be empty");
@@ -363,10 +369,20 @@ funct
 calcsum 
 	: S* calcproduct ( S* ( PLUS | MINUS ) S* calcproduct )*
 	;
+	catch [RecognitionException re] {
+        IntervalSet intervalSet = new IntervalSet(RCURLY,SEMICOLON);
+		this.getCSSErrorHandler().consumeUntil(this,intervalSet);
+		_localctx.addErrorNode(this.getTokenFactory().create(INVALID_STATEMENT,""));
+    }
 	
 calcproduct
 	: S* calcvalue ( S* ASTERISK S* calcvalue S* | S* SLASH S* NUMBER S*)*
 	;
+	catch [RecognitionException re] {
+        IntervalSet intervalSet = new IntervalSet(RCURLY,SEMICOLON);
+		this.getCSSErrorHandler().consumeUntil(this,intervalSet);
+		_localctx.addErrorNode(this.getTokenFactory().create(INVALID_STATEMENT,""));
+    }
 	
 calcvalue
 	: NUMBER 
@@ -374,10 +390,15 @@ calcvalue
 	| PERCENTAGE 
 	| '(' S* calcsum S* ')'
 	;
+	catch [RecognitionException re] {
+        IntervalSet intervalSet = new IntervalSet(RCURLY,SEMICOLON);
+		this.getCSSErrorHandler().consumeUntil(this,intervalSet);
+		_localctx.addErrorNode(this.getTokenFactory().create(INVALID_STATEMENT,""));
+    }
 
 /** a part of a property value */
 valuepart
-    : ( MINUS? IDENT  //-> MINUS? IDENT
+    : ( MINUS* IDENT  //-> MINUS? IDENT
       | CLASSKEYWORD //-> CLASSKEYWORD
       | (PLUS | MINUS)? NUMBER //-> MINUS? NUMBER
       | (PLUS | MINUS)? PERCENTAGE //-> MINUS? PERCENTAGE
@@ -593,7 +614,8 @@ norule
     | POUND //that is not HASH (not an identifier)
     | HAT
     | AMPERSAND
-    );
+    | S
+    )+;
     catch [RecognitionException re] {
         log.error("PARSING norule ERROR | should be empty");
     }

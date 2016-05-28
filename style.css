@@ -1,7 +1,4 @@
 div {
-	border: none
-}	
-
-div {
-
+  margin-bottom: var(--space);
+  margin-bottom: calc(var(--space)/0.85);
 }
