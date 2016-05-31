@@ -199,9 +199,7 @@ COUNTERSTYLE
 	
 KEYFRAMES
 	: '@keyframes'
-	| '@-webkit-keyframes'
-	| '@-moz-keyframes'
-	| '@-o-keyframes'
+	| '@-'('a'..'z')+'-keyframes'
 	;
 
 MARGIN_AREA

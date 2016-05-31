@@ -1,4 +1,3 @@
-div {
-  margin-bottom: var(--space);
-  margin-bottom: calc(var(--space)/0.85);
+span {
+  filter: alpha(opacity=60);
 }

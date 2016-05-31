@@ -432,19 +432,24 @@ public class CSSParserListenerImpl implements CSSParserListener {
 			log.debug("invalidating declaration");
 			addCSSError(ctx, "Syntax error: " + ctx.getText());
 			tmpDeclarationScope.invalid = true;
+			System.out.println("INVALID DECLARATION");
 		}
 	}
 
 	@Override
 	public void exitDeclaration(CSSParser.DeclarationContext ctx) {
 
+		System.out.println("DEZE");
+		
 		if (ctx.terms() != null) {
+			System.out.println("YAY: "+tmpTermList.size());
 			// log.debug("Totally added {} terms",
 			// terms_stack.peek().list.size());
 			tmpDeclarationScope.d.replaceAll(tmpTermList);
 
 		}
 		if (!tmpDeclarationScope.invalid) {
+			System.out.println("YAY2: ");
 			log.debug("Returning declaration: {}.", tmpDeclarationScope.d);
 
 			if (tmpDeclarationComment != null) {
@@ -456,6 +461,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 			tmpDeclarations.add(tmpDeclarationScope.d);
 			log.debug("Inserted declaration #{} ", tmpDeclarations.size() + 1);
 		} else {
+			System.out.println("DECLARATION IS INVALID");
 			log.debug("Declaration was invalidated or already invalid");
 		}
 
@@ -466,6 +472,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 		if (ctxHasErrorNode(ctx)) {
 			tmpDeclarationScope.invalid = true;
 			addCSSError(ctx, "Syntax error: " + ctx.getText());
+			System.out.println("INVALID IMPORTANT");
 		} else {
 			tmpDeclarationScope.d.setImportant(true);
 			log.debug("Setting property to IMPORTANT");
@@ -518,6 +525,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 			log.debug("invalidating terms");
 			addCSSError(ctx, "Syntax error: " + ctx.getText());
 			tmpDeclarationScope.invalid = true;
+			System.out.println("INVALID TERMS");
 		}
 	}
 
@@ -543,6 +551,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 	@Override
 	public void enterTermCurlyBlock(CSSParser.TermCurlyBlockContext ctx) {
 		tmpDeclarationScope.invalid = true;
+		System.out.println("enterTermCurlyBlock INVALID");
 	}
 
 	@Override
@@ -553,6 +562,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 	@Override
 	public void enterTermAtKeyword(CSSParser.TermAtKeywordContext ctx) {
 		tmpDeclarationScope.invalid = true;
+		System.out.println("enterTermAtKeyword INVALID");
 	}
 
 	@Override
@@ -571,6 +581,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 			log.debug("invalidating terms");
 			addCSSError(ctx, "Syntax error: " + ctx.getText());
 			tmpDeclarationScope.invalid = true;
+			System.out.println("exitFunct INVALID MAIN");
 		} else {
 			if (ctx.EXPRESSION() != null) {
 				// EXPRESSION
@@ -619,6 +630,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 				if (fname.equalsIgnoreCase("url")) {
 					if (terms_stack.peek().unary == -1 || tmpTermList == null || tmpTermList.size() != 1) {
 						tmpDeclarationScope.invalid = true;
+						System.out.println("exitFunct INVALID");
 					} else {
 						Term<?> term = tmpTermList.get(0);
 						if (term instanceof TermString) {
@@ -626,8 +638,10 @@ public class CSSParserListenerImpl implements CSSParserListener {
 							terms_stack.peek().term = tf.createURI(extractTextUnescaped(((TermString) term).getValue()),
 									extractBase(ctx.FUNCTION()));
 							terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
-						} else
+						} else {
 							tmpDeclarationScope.invalid = true;
+							System.out.println("exitFunct INVALID2");
+						}
 					}
 				} else if (fname.equalsIgnoreCase("rgb(")) {
 					TermFunction function = tf.createFunction();
@@ -671,7 +685,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 
 	@Override
 	public void enterValuepart(CSSParser.ValuepartContext ctx) {
-		logEnter("valuepart: >" + ctx.getText() + "<");
+		logEnter("valueparts: >" + ctx.getText() + "<");
 
 		// So that it doesn't break with this ugly CSS hack: padding: 5px 5px
 		// 5px 5px\0;
@@ -706,6 +720,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 			terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
 			if (terms_stack.peek().term == null) {
 				tmpDeclarationScope.invalid = true;
+				System.out.println("enterValuepart INVALID");
 			}
 		} else if (ctx.PERCENTAGE() != null) {
 			log.debug("VP - percentage");
@@ -722,6 +737,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 				if (terms_stack.peek().term == null) {
 					log.info("Unable to create dimension from {}, unary {}", dim, terms_stack.peek().unary);
 					tmpDeclarationScope.invalid = true;
+					System.out.println("INVALID DIMENSION");
 				}
 			} else {
 				terms_stack.peek().term = tf.createDimension(dim, terms_stack.peek().unary);
@@ -734,6 +750,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 				if (terms_stack.peek().term == null) {
 					log.info("Unable to create dimension from {}, unary {}", dim, terms_stack.peek().unary);
 					tmpDeclarationScope.invalid = true;
+					System.out.println("INVALID DIMENSION AGAIN");
 				}
 			}
 		} else if (ctx.NUMBER() != null) {
@@ -753,6 +770,8 @@ public class CSSParserListenerImpl implements CSSParserListener {
 			log.error("unhandled valueparts");
 			terms_stack.peek().term = null;
 			tmpDeclarationScope.invalid = true;
+			addCSSError(ctx, "Syntax error: " + ctx.getText());
+			System.out.println("INVALID VALUEPARTS");
 		}
 	}
 
@@ -1100,6 +1119,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 	public void exitPseudo(CSSParser.PseudoContext ctx) {
 		// check if is in declaration
 		if (tmpDeclarationScope != null && tmpDeclarationScope.d != null && tmpDeclarationScope.invalid) {
+			System.out.println("INVALID PSEUDO");
 			stmtIsValid = false;
 		}
 	}
@@ -1647,6 +1667,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 			log.debug("invalidating terms");
 			addCSSError(ctx, "Syntax error: " + ctx.getText());
 			tmpDeclarationScope.invalid = true;
+			System.out.println("INVALID CALCSUM");
 		}
 	}
 
@@ -1661,6 +1682,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 			log.debug("invalidating terms");
 			addCSSError(ctx, "Syntax error: " + ctx.getText());
 			tmpDeclarationScope.invalid = true;
+			System.out.println("INVALID CALCPRODUCT");
 		}
 	}
 
@@ -1675,6 +1697,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 			log.debug("invalidating terms");
 			addCSSError(ctx, "Syntax error: " + ctx.getText());
 			tmpDeclarationScope.invalid = true;
+			System.out.println("INVALID CALCVALUE");
 		}
 	}
 

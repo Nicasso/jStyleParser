@@ -424,7 +424,9 @@ valuepart
     ) S*//!S*
     ;
 	catch [RecognitionException re] {
-	  log.error("THROWING valuepart ERROR / TODO:");
+	 	IntervalSet intervalSet = new IntervalSet(RCURLY,SEMICOLON);
+		this.getCSSErrorHandler().consumeUntil(this,intervalSet);
+		_localctx.addErrorNode(this.getTokenFactory().create(INVALID_STATEMENT,""));
 //	  throw re;
 //	  reportError(re);
 //      recover(input,re);
