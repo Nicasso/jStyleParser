@@ -790,42 +790,42 @@ public final class CSSFactory {
 			NetworkProcessor network = ((SourceData) source).network;
 			Element elem = (Element) current;
 
-			try {
-				// embedded style-sheet
-				if (isEmbeddedStyleSheet(elem, media)) {
-					result = pf.append(extractElementText(elem), network, null,
-							SourceType.EMBEDDED, result, base);
-					log.debug("Matched embedded CSS style");
-				}
-				// linked style-sheet
-				else if (isLinkedStyleSheet(elem, media)) {
-				    URL uri = DataURLHandler.createURL(base, matcher.getAttribute(elem, "href"));
-					result = pf.append(uri, network, encoding, SourceType.URL,
-							result, uri);
-					log.debug("Matched linked CSS style");
-				}
-				// in-line style and default style
-				else {
-    				    if (elem.getAttribute("style") != null && elem.getAttribute("style").length() > 0) {
-        					result = pf.append(
-        							elem.getAttribute("style"), network,
-        							null, SourceType.INLINE,
-        							elem, true, result, base);
-        					log.debug("Matched inline CSS style");
-    				    }
-                        if (elem.getAttribute("XDefaultStyle") != null && elem.getAttribute("XDefaultStyle").length() > 0) {
-                            result = pf.append(
-                                    elem.getAttribute("XDefaultStyle"), network,
-                                    null, SourceType.INLINE,
-                                    elem, false, result, base);
-                            log.debug("Matched default CSS style");
-                        }
-				}
-			} catch (CSSException ce) {
-				log.error("THROWN:", ce);
-			} catch (IOException ioe) {
-				log.error("THROWN:", ioe);
-			}
+//			try {
+//				// embedded style-sheet
+//				if (isEmbeddedStyleSheet(elem, media)) {
+//					result = pf.append(extractElementText(elem), network, null,
+//							SourceType.EMBEDDED, result, base);
+//					log.debug("Matched embedded CSS style");
+//				}
+//				// linked style-sheet
+//				else if (isLinkedStyleSheet(elem, media)) {
+//				    URL uri = DataURLHandler.createURL(base, matcher.getAttribute(elem, "href"));
+//					result = pf.append(uri, network, encoding, SourceType.URL,
+//							result, uri);
+//					log.debug("Matched linked CSS style");
+//				}
+//				// in-line style and default style
+//				else {
+//    				    if (elem.getAttribute("style") != null && elem.getAttribute("style").length() > 0) {
+//        					result = pf.append(
+//        							elem.getAttribute("style"), network,
+//        							null, SourceType.INLINE,
+//        							elem, true, result, base);
+//        					log.debug("Matched inline CSS style");
+//    				    }
+//                        if (elem.getAttribute("XDefaultStyle") != null && elem.getAttribute("XDefaultStyle").length() > 0) {
+//                            result = pf.append(
+//                                    elem.getAttribute("XDefaultStyle"), network,
+//                                    null, SourceType.INLINE,
+//                                    elem, false, result, base);
+//                            log.debug("Matched default CSS style");
+//                        }
+//				}
+//			} catch (CSSException ce) {
+//				log.error("THROWN:", ce);
+//			} catch (IOException ioe) {
+//				log.error("THROWN:", ioe);
+//			}
 
 		}
 

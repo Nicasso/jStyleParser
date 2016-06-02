@@ -26,6 +26,7 @@ import cz.vutbr.web.css.RuleSet;
 import cz.vutbr.web.css.RuleViewport;
 import cz.vutbr.web.css.Selector;
 import cz.vutbr.web.css.Selector.PseudoPage;
+import cz.vutbr.web.css.StyleSheet;
 
 public class SimplePreparator implements Preparator {
 	protected static final Logger log = LoggerFactory
@@ -186,13 +187,15 @@ public class SimplePreparator implements Preparator {
 	}
 
 	@Override
-	public RuleImport prepareRuleImport(String uri, List<MediaQuery> importMediaQueryList) {
+	public RuleImport prepareRuleImport(String uri, List<MediaQuery> importMediaQueryList, StyleSheet linkedStylesheet) {
 		if (uri == null | uri.isEmpty()) {
 			log.debug("Empty RuleImport was ommited");
+			System.out.println("RULE IMPORT WAS EMPTY");
 			return null;
 		}
 		
 		RuleImport rp = rf.createImport(uri, importMediaQueryList);
+//		rp.setLinkedStylesheet(linkedStylesheet);
 		log.info("Create @import");
 		
 		return (RuleImport) rp;

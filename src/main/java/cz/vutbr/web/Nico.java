@@ -55,21 +55,23 @@ import cz.vutbr.web.css.TermURI;
 public class Nico {
 
 	public Nico() {
-		loadStylesheet(null);
+		loadStylesheet("style.css");
 	}
 
-	private void loadStylesheet(URL file) {
+	private void loadStylesheet(String fileName) {
 
 		StyleSheet style = null;
 
-		if (file == null) {
+		if (fileName != null) {
 			try {
-				style = CSSFactory.parse("style.css", "UTF-8");
+				style = CSSFactory.parse(fileName, "UTF-8");
+				System.out.println("----------------------------");
+				System.out.println("NAME: "+style.getName());
 				if (style.getComment() != null) {
 					System.out.println("Stylesheet comment: " + style.getComment().getText());
 					System.out.println("Stylesheet comment location: " + style.getComment().getLocation().toString());
 				}
-				System.out.println("----------------------------");
+				
 				System.out.println("ERRORS: " + style.getCSSErrors().size());
 				for (int i = 0; i < style.getCSSErrors().size(); i++) {
 					System.out.println(style.getCSSErrors().get(i).getMessage() + " - "
@@ -82,7 +84,7 @@ public class Nico {
 			}
 		} else {
 			try {
-				style = CSSFactory.parse(file, "UTF-8");
+				style = CSSFactory.parse(fileName, "UTF-8");
 				rulesBlock(style);
 			} catch (CSSException | IOException e) {
 				// TODO Auto-generated catch block
@@ -240,6 +242,7 @@ public class Nico {
 		System.out.println("");
 		System.out.println("This is a ruleImport");
 		System.out.println(ruleBlock.getURI());
+		
 		
 		mediaQuery(ruleBlock.getMediaQueries());
 	}

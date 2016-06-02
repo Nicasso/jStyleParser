@@ -1,5 +1,8 @@
 package cz.vutbr.web.csskit.antlr4;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,20 +18,25 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 import org.codehaus.plexus.interpolation.util.StringUtils;
+import org.fit.net.DataURLHandler;
 
 import cz.vutbr.web.css.CSSComment;
+import cz.vutbr.web.css.CSSException;
 import cz.vutbr.web.css.CSSFactory;
 import cz.vutbr.web.css.CodeLocation;
 import cz.vutbr.web.css.CombinedSelector;
 import cz.vutbr.web.css.Declaration;
 import cz.vutbr.web.css.MediaExpression;
 import cz.vutbr.web.css.MediaQuery;
+import cz.vutbr.web.css.NetworkProcessor;
 import cz.vutbr.web.css.RuleBlock;
 import cz.vutbr.web.css.RuleFactory;
+import cz.vutbr.web.css.RuleImport;
 import cz.vutbr.web.css.RuleList;
 import cz.vutbr.web.css.RuleMargin;
 import cz.vutbr.web.css.RuleSet;
 import cz.vutbr.web.css.Selector;
+import cz.vutbr.web.css.StyleSheet;
 import cz.vutbr.web.css.Term;
 import cz.vutbr.web.css.TermCalc;
 import cz.vutbr.web.css.TermColor;
@@ -38,6 +46,7 @@ import cz.vutbr.web.css.TermIdent;
 import cz.vutbr.web.css.TermString;
 import cz.vutbr.web.csskit.CSSError;
 import cz.vutbr.web.csskit.CommentImpl;
+import cz.vutbr.web.csskit.DefaultNetworkProcessor;
 import cz.vutbr.web.csskit.RuleArrayList;
 import cz.vutbr.web.csskit.TermColorImpl;
 import cz.vutbr.web.csskit.antlr4.CSSParser.CalcproductContext;
@@ -49,6 +58,7 @@ import cz.vutbr.web.csskit.antlr4.CSSParser.Keyframe_selectorContext;
 import cz.vutbr.web.csskit.antlr4.CSSParser.Keyframe_selectorsContext;
 import cz.vutbr.web.csskit.antlr4.CSSParser.Keyframes_blockContext;
 import cz.vutbr.web.csskit.antlr4.CSSParser.OperatorContext;
+import cz.vutbr.web.csskit.antlr4.CSSParserFactory.SourceType;
 
 public class CSSParserListenerImpl implements CSSParserListener {
 
@@ -70,7 +80,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 	private List<MediaQuery> wrapMedia;
 
 	// prevent imports inside the style sheet
-	private boolean preventImports = true;
+	private boolean preventImports = false;
 
 	// logger
 	private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
@@ -338,7 +348,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 		
 		if (ctx.ruleset() != null) {
 			if (stmtIsValid) {
-				System.out.println(tmpRuleList.size());
+				//System.out.println(tmpRuleList.size());
 				for (RuleBlock<?> rule : tmpRuleList) {
 					if (rule != null) {
 						if (tmpStatementComment != null) {
@@ -385,7 +395,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 		// logLeave("ruleset" +ctx.getText());
 		// complete ruleset and add to ruleList
 		
-		if(ctx.norule() == null) {
+		if (ctx.norule() == null) {
 		
 			tmpAtStatementOrRuleSetScope.stm = preparator.prepareRuleSet(tmpCombinedSelectorList, tmpDeclarations,
 					(this.wrapMedia != null && !this.wrapMedia.isEmpty()), this.wrapMedia);
@@ -398,13 +408,13 @@ public class CSSParserListenerImpl implements CSSParserListener {
 			
 			if (ctxHasErrorNode(ctx)) {
 				log.debug("invalidating ruleset");
-				addCSSError(ctx, "Syntax error: " + ctx.getText());
+				addCSSError(ctx, "Ruleset syntax error: " + ctx.getText());
 			}
 		}
 		
 		if (ctxHasErrorNode(ctx)) {
 			log.debug("invalidating ruleset");
-			addCSSError(ctx, "Syntax error: " + ctx.getText());
+			addCSSError(ctx, "Ruleset syntax error: " + ctx.getText());
 		}
 		// cleanup tmpDeclarations
 		tmpDeclarations = null;
@@ -430,26 +440,26 @@ public class CSSParserListenerImpl implements CSSParserListener {
 
 		if (ctxHasErrorNode(ctx) || ctx.noprop() != null) {
 			log.debug("invalidating declaration");
-			addCSSError(ctx, "Syntax error: " + ctx.getText());
+			addCSSError(ctx, "Declaration syntax error: " + ctx.getText());
 			tmpDeclarationScope.invalid = true;
-			System.out.println("INVALID DECLARATION");
+			//System.out.println("INVALID DECLARATION");
 		}
 	}
 
 	@Override
 	public void exitDeclaration(CSSParser.DeclarationContext ctx) {
 
-		System.out.println("DEZE");
+		//System.out.println("DEZE");
 		
 		if (ctx.terms() != null) {
-			System.out.println("YAY: "+tmpTermList.size());
+			//System.out.println("YAY: "+tmpTermList.size());
 			// log.debug("Totally added {} terms",
 			// terms_stack.peek().list.size());
 			tmpDeclarationScope.d.replaceAll(tmpTermList);
 
 		}
 		if (!tmpDeclarationScope.invalid) {
-			System.out.println("YAY2: ");
+			//System.out.println("YAY2: ");
 			log.debug("Returning declaration: {}.", tmpDeclarationScope.d);
 
 			if (tmpDeclarationComment != null) {
@@ -461,7 +471,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 			tmpDeclarations.add(tmpDeclarationScope.d);
 			log.debug("Inserted declaration #{} ", tmpDeclarations.size() + 1);
 		} else {
-			System.out.println("DECLARATION IS INVALID");
+			//System.out.println("DECLARATION IS INVALID");
 			log.debug("Declaration was invalidated or already invalid");
 		}
 
@@ -471,8 +481,8 @@ public class CSSParserListenerImpl implements CSSParserListener {
 	public void enterImportant(CSSParser.ImportantContext ctx) {
 		if (ctxHasErrorNode(ctx)) {
 			tmpDeclarationScope.invalid = true;
-			addCSSError(ctx, "Syntax error: " + ctx.getText());
-			System.out.println("INVALID IMPORTANT");
+			addCSSError(ctx, "Important syntax error: " + ctx.getText());
+			//System.out.println("INVALID IMPORTANT");
 		} else {
 			tmpDeclarationScope.d.setImportant(true);
 			log.debug("Setting property to IMPORTANT");
@@ -523,9 +533,9 @@ public class CSSParserListenerImpl implements CSSParserListener {
 
 		if (ctxHasErrorNode(ctx)) {
 			log.debug("invalidating terms");
-			addCSSError(ctx, "Syntax error: " + ctx.getText());
+			addCSSError(ctx, "Terms syntax error: " + ctx.getText());
 			tmpDeclarationScope.invalid = true;
-			System.out.println("INVALID TERMS");
+			//System.out.println("INVALID TERMS");
 		}
 	}
 
@@ -551,7 +561,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 	@Override
 	public void enterTermCurlyBlock(CSSParser.TermCurlyBlockContext ctx) {
 		tmpDeclarationScope.invalid = true;
-		System.out.println("enterTermCurlyBlock INVALID");
+		//System.out.println("enterTermCurlyBlock INVALID");
 	}
 
 	@Override
@@ -562,7 +572,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 	@Override
 	public void enterTermAtKeyword(CSSParser.TermAtKeywordContext ctx) {
 		tmpDeclarationScope.invalid = true;
-		System.out.println("enterTermAtKeyword INVALID");
+		//System.out.println("enterTermAtKeyword INVALID");
 	}
 
 	@Override
@@ -579,17 +589,17 @@ public class CSSParserListenerImpl implements CSSParserListener {
 	public void exitFunct(CSSParser.FunctContext ctx) {
 		if (ctxHasErrorNode(ctx)) {
 			log.debug("invalidating terms");
-			addCSSError(ctx, "Syntax error: " + ctx.getText());
+			addCSSError(ctx, "Function syntax error: " + ctx.getText());
 			tmpDeclarationScope.invalid = true;
-			System.out.println("exitFunct INVALID MAIN");
+			//System.out.println("exitFunct INVALID MAIN");
 		} else {
 			if (ctx.EXPRESSION() != null) {
 				// EXPRESSION
-				System.out.println("EXPRESSION: ");
-				System.out.println(ctx.getText());
-	//			System.out.println(ctx.actualExpression.toString());
-	//			System.out.println(ctx.actualExpression.getText());
-	//			System.out.println(ctx.actualExpression);
+				//System.out.println("EXPRESSION: ");
+				//System.out.println(ctx.getText());
+	//			//System.out.println(ctx.actualExpression.toString());
+	//			//System.out.println(ctx.actualExpression.getText());
+	//			//System.out.println(ctx.actualExpression);
 				//throw new UnsupportedOperationException("EXPRESSIONS are not allowed yet");
 				// todo
 				TermFunction function = tf.createFunction();
@@ -619,7 +629,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 				
 				log.debug("Setting function: {}", function.toString());
 			} else if (ctx.CALC() != null || ctx.calcsum() != null) {
-				System.out.println("CALC HERE: " + ctx.getText());
+				//System.out.println("CALC HERE: " + ctx.getText());
 	
 				TermCalc calc = tf.createCalc(ctx.calcsum().getText());
 				terms_stack.peek().term = calc;
@@ -630,7 +640,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 				if (fname.equalsIgnoreCase("url")) {
 					if (terms_stack.peek().unary == -1 || tmpTermList == null || tmpTermList.size() != 1) {
 						tmpDeclarationScope.invalid = true;
-						System.out.println("exitFunct INVALID");
+						//System.out.println("exitFunct INVALID");
 					} else {
 						Term<?> term = tmpTermList.get(0);
 						if (term instanceof TermString) {
@@ -640,7 +650,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 							terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
 						} else {
 							tmpDeclarationScope.invalid = true;
-							System.out.println("exitFunct INVALID2");
+							//System.out.println("exitFunct INVALID2");
 						}
 					}
 				} else if (fname.equalsIgnoreCase("rgb(")) {
@@ -698,10 +708,10 @@ public class CSSParserListenerImpl implements CSSParserListener {
 		terms_stack.peek().op = tmpOperator;
 		if (ctx.COMMA() != null) {
 			log.debug("VP - comma");
-			System.out.println("COMMAAAAAAAAAAAAAAAAAAAAA");
+			//System.out.println("COMMAAAAAAAAAAAAAAAAAAAAA");
 			terms_stack.peek().op = Term.Operator.COMMA;
 		} else if (ctx.SLASH() != null) {
-			System.out.println("SLASSSSSSSSSSSSH");
+			//System.out.println("SLASSSSSSSSSSSSH");
 			terms_stack.peek().op = Term.Operator.SLASH;
 		} else if (ctx.string() != null) {
 			// string
@@ -720,7 +730,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 			terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
 			if (terms_stack.peek().term == null) {
 				tmpDeclarationScope.invalid = true;
-				System.out.println("enterValuepart INVALID");
+				//System.out.println("enterValuepart INVALID");
 			}
 		} else if (ctx.PERCENTAGE() != null) {
 			log.debug("VP - percentage");
@@ -729,33 +739,33 @@ public class CSSParserListenerImpl implements CSSParserListener {
 		} else if (ctx.DIMENSION() != null) {
 			log.debug("VP - dimension");
 			String dim = text.trim();
-			System.out.println(text);
-			System.out.println(ctx.getText());
+			//System.out.println(text);
+			//System.out.println(ctx.getText());
 			if (!text.trim().equals(ctx.getText().trim()) && isNumeric(dim)) {
 				terms_stack.peek().term = tf.createDimension(dim + "px", terms_stack.peek().unary);
 				terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
 				if (terms_stack.peek().term == null) {
 					log.info("Unable to create dimension from {}, unary {}", dim, terms_stack.peek().unary);
 					tmpDeclarationScope.invalid = true;
-					System.out.println("INVALID DIMENSION");
+					//System.out.println("INVALID DIMENSION");
 				}
 			} else {
 				terms_stack.peek().term = tf.createDimension(dim, terms_stack.peek().unary);
 				// TODO: IE HACK like padding: 5px 5px 5px 5px\0; BREAKS HERE!
-				System.out.println(terms_stack.peek().term);
-				System.out.println("-------------");
-				System.out.println(ctx.getText());
-				System.out.println(dim);
+				//System.out.println(terms_stack.peek().term);
+				//System.out.println("-------------");
+				//System.out.println(ctx.getText());
+				//System.out.println(dim);
 				terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
 				if (terms_stack.peek().term == null) {
 					log.info("Unable to create dimension from {}, unary {}", dim, terms_stack.peek().unary);
 					tmpDeclarationScope.invalid = true;
-					System.out.println("INVALID DIMENSION AGAIN");
+					//System.out.println("INVALID DIMENSION AGAIN");
 				}
 			}
 		} else if (ctx.NUMBER() != null) {
 			log.debug("VP - number");
-			System.out.println("NUMBER");
+			//System.out.println("NUMBER");
 			terms_stack.peek().term = tf.createNumeric(text, terms_stack.peek().unary);
 			terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
 		} else if (ctx.URI() != null) {
@@ -770,8 +780,8 @@ public class CSSParserListenerImpl implements CSSParserListener {
 			log.error("unhandled valueparts");
 			terms_stack.peek().term = null;
 			tmpDeclarationScope.invalid = true;
-			addCSSError(ctx, "Syntax error: " + ctx.getText());
-			System.out.println("INVALID VALUEPARTS");
+			addCSSError(ctx, "Value part syntax error: " + ctx.getText());
+			//System.out.println("INVALID VALUEPARTS");
 		}
 	}
 
@@ -788,9 +798,9 @@ public class CSSParserListenerImpl implements CSSParserListener {
 	@Override
 	public void exitValuepart(CSSParser.ValuepartContext ctx) {
 		// try convert color from current term
-		// System.out.println("VP: "+ctx.getText());
-		// System.out.println(getCodeLocation(ctx,0));
-		// System.out.println("");
+		// //System.out.println("VP: "+ctx.getText());
+		// //System.out.println(getCodeLocation(ctx,0));
+		// //System.out.println("");
 		if (terms_stack.peek().term != null) {
 			TermColor termColor = null;
 			if (terms_stack.peek().term instanceof TermIdent) { // red
@@ -1060,7 +1070,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 	public void enterPseudo(CSSParser.PseudoContext ctx) {
 		if (ctxHasErrorNode(ctx)) {
 			stmtIsValid = false;
-			addCSSError(ctx, "Syntax error: " + ctx.getText());
+			addCSSError(ctx, "Pseudo syntax error: " + ctx.getText());
 		}
 		logEnter("pseudo: " + ctx.getText());
 		// childcount == 2
@@ -1119,7 +1129,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 	public void exitPseudo(CSSParser.PseudoContext ctx) {
 		// check if is in declaration
 		if (tmpDeclarationScope != null && tmpDeclarationScope.d != null && tmpDeclarationScope.invalid) {
-			System.out.println("INVALID PSEUDO");
+			//System.out.println("INVALID PSEUDO");
 			stmtIsValid = false;
 		}
 	}
@@ -1178,7 +1188,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 	@Override
 	public void enterNorule(CSSParser.NoruleContext ctx) {
 		logEnter("norule: " + ctx.getText());
-		addCSSError(ctx, "Syntax error: " + ctx.getText());
+		addCSSError(ctx, "No rule syntax error: " + ctx.getText());
 	}
 
 	@Override
@@ -1211,16 +1221,23 @@ public class CSSParserListenerImpl implements CSSParserListener {
 		log.debug("exit atstatement: " + ctx.getText());
 		if (ctxHasErrorNode(ctx)) {
 			log.debug("atstatement is not valid");
-			addCSSError(ctx, "Syntax error: " + ctx.getText());
+			addCSSError(ctx, "At-statement syntax error: " + ctx.getText());
 			return;
 		}
 		if (ctx.CHARSET() != null) {
 			String charset = ctx.charset_name().getText();
 			tmpAtStatementOrRuleSetScope.stm = preparator.prepareRuleCharset(charset);
 			tmpAtStatementOrRuleSetScope.stm.setLocation(getCodeLocation(ctx, 0));
-			this.preventImports = true;
 		} else if (ctx.IMPORT() != null) {
-			String iuri = ctx.import_uri().getText();
+			String iuri = extractTextUnescaped(ctx.import_uri().getText());
+			
+			iuri = iuri.replaceAll("(\"|')", "");
+			
+			//System.out.println("DEZE HIER: "+ctx.import_uri().getText());
+			//System.out.println("DEZE HIER2: "+iuri);
+			
+			importMedia.add(mediaQueryList);
+			importPaths.add(iuri);
 
 			// List<MediaQuery> importMediaQueryList = new ArrayList<>();
 
@@ -1228,17 +1245,43 @@ public class CSSParserListenerImpl implements CSSParserListener {
 				// media is not set, set empty
 				mediaQueryList = new ArrayList<>();
 			}
+			
 			List<RuleSet> mediaRulesList = new ArrayList<>();
 			if (ctx.media_rule() != null) {
 				for (RuleBlock<?> rule : tmpRuleList) {
 					mediaRulesList.add((RuleSet) rule);
 				}
-
 			}
 
-			tmpAtStatementOrRuleSetScope.stm = preparator.prepareRuleImport(iuri, mediaQueryList);
+//			StyleSheet a = null;
+//			
+//			File f = new File(iuri);
+//			URL base;
+//			URL url = null;
+//			try {
+//				base = f.toURI().toURL();
+//				url = DataURLHandler.createURL(base, iuri);
+//			} catch (MalformedURLException e1) {
+//				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+//			}
+//			
+//			System.out.println("loADING THE FOLLOWING IMPORT: "+url);
+//			
+//			try {
+//				a = CSSFactory.parse(url, "UTF-8");
+//				tmpAtStatementOrRuleSetScope.stm = (RuleImport) preparator.prepareRuleImport(iuri, mediaQueryList, a);
+//				tmpAtStatementOrRuleSetScope.stm.setLocation(getCodeLocation(ctx, 0));
+//			} catch (CSSException e) {
+//				a = (StyleSheet) CSSFactory.getRuleFactory().createStyleSheet().unlock();
+//				addCSSError(ctx, "Syntax error: " + ctx.getText());
+//			} catch (IOException e) {
+//				a = (StyleSheet) CSSFactory.getRuleFactory().createStyleSheet().unlock();
+//				addCSSError(ctx, "Load error: " + ctx.getText()+" - "+e.getMessage());
+//			}
+			
+			tmpAtStatementOrRuleSetScope.stm = (RuleImport) preparator.prepareRuleImport(iuri, mediaQueryList, null);
 			tmpAtStatementOrRuleSetScope.stm.setLocation(getCodeLocation(ctx, 0));
-			this.preventImports = true;
 		} else if (ctx.NAMESPACE() != null) {
 			String prefix = "";
 			if (ctx.prefix != null) {
@@ -1254,26 +1297,22 @@ public class CSSParserListenerImpl implements CSSParserListener {
 			}
 			tmpAtStatementOrRuleSetScope.stm = preparator.prepareRuleNamespace(prefix, uri);
 			tmpAtStatementOrRuleSetScope.stm.setLocation(getCodeLocation(ctx, 0));
-			this.preventImports = true;
 		} else if (ctx.COUNTERSTYLE() != null) {
 			log.debug("exitAtstatement COUNTERSTYLE");
 			String name = extractTextUnescaped(ctx.name.getText());
-			System.out.println("COUNTERS STYLO");
-			System.out.println(tmpDeclarations.toString());
+			//System.out.println("COUNTERS STYLO");
+			//System.out.println(tmpDeclarations.toString());
 			tmpAtStatementOrRuleSetScope.stm = preparator.prepareRuleCounterStyle(name, tmpDeclarations);
 			tmpAtStatementOrRuleSetScope.stm.setLocation(getCodeLocation(ctx, 0));
-			this.preventImports = true;
 		} else if (ctx.page() != null) {
 			// implemented in exitPage
 
 		} else if (ctx.VIEWPORT() != null) {
 			tmpAtStatementOrRuleSetScope.stm = preparator.prepareRuleViewport(tmpDeclarations);
 			tmpAtStatementOrRuleSetScope.stm.setLocation(getCodeLocation(ctx, 0));
-			this.preventImports = true;
 		} else if (ctx.FONTFACE() != null) {
 			tmpAtStatementOrRuleSetScope.stm = preparator.prepareRuleFontFace(tmpDeclarations);
 			tmpAtStatementOrRuleSetScope.stm.setLocation(getCodeLocation(ctx, 0));
-			this.preventImports = true;
 		} else if (ctx.MEDIA() != null) {
 			log.debug("exitAtstatement MEDIA");
 			if (ctx.media() == null) {
@@ -1292,7 +1331,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 			this.preventImports = true;
 		} else if (ctx.KEYFRAMES() != null) {
 			log.debug("exitAtstatement KEYFRAMES");
-			System.out.println("exitAtstatement KEYFRAMES");
+			//System.out.println("exitAtstatement KEYFRAMES");
 
 			List<RuleSet> keyFrameList = new ArrayList<>();
 			if (ctx.keyframes_block() != null) {
@@ -1309,7 +1348,6 @@ public class CSSParserListenerImpl implements CSSParserListener {
 			}
 			
 			tmpAtStatementOrRuleSetScope.stm.setLocation(getCodeLocation(ctx, 0));
-			this.preventImports = true;
 		} else {
 			// unknown atrule
 			log.debug("Skipping invalid at statement");
@@ -1515,7 +1553,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 			tmpMediaExpression.replaceAll(tmpDeclarationScope.d);
 		}
 		if (ctxHasErrorNode(ctx)) {
-			addCSSError(ctx, "Syntax error: " + ctx.getText());
+			addCSSError(ctx, "Media expression syntax error: " + ctx.getText());
 			log.debug("media_expression is invalid");
 			tmpMediaQueryScope.invalid = true;
 		}
@@ -1623,25 +1661,25 @@ public class CSSParserListenerImpl implements CSSParserListener {
 			endPosition = lines[lines.length - 1].length() + 1;
 		}
 
-		// System.out.println(ctx.getText());
-		// System.out.println("");
-		// System.out.println("LINES: "+lines.length);
-		// System.out.println("LINES-1: "+(lines.length-1));
-		// System.out.println("");
-		// System.out.println("");
-		// System.out.println("OFFSET: "+offset);
-		// System.out.println("LENGTH: "+(ctx.getStop().getStopIndex() -
+		// //System.out.println(ctx.getText());
+		// //System.out.println("");
+		// //System.out.println("LINES: "+lines.length);
+		// //System.out.println("LINES-1: "+(lines.length-1));
+		// //System.out.println("");
+		// //System.out.println("");
+		// //System.out.println("OFFSET: "+offset);
+		// //System.out.println("LENGTH: "+(ctx.getStop().getStopIndex() -
 		// ctx.getStart().getStartIndex()));
-		// System.out.println("STARTLINE: "+startLine);
-		// System.out.println("ENDLINE: "+endLine);
-		// System.out.println("STARTPOS:"+startPosition);
-		// System.out.println("ENDPOS: "+endPosition);
-		// System.out.println("");
-		// System.out.println(startLine<=endLine);
-		// System.out.println(startPosition<=endPosition);
-		// System.out.println("");
-		// System.out.println("");
-		// System.out.println("");
+		// //System.out.println("STARTLINE: "+startLine);
+		// //System.out.println("ENDLINE: "+endLine);
+		// //System.out.println("STARTPOS:"+startPosition);
+		// //System.out.println("ENDPOS: "+endPosition);
+		// //System.out.println("");
+		// //System.out.println(startLine<=endLine);
+		// //System.out.println(startPosition<=endPosition);
+		// //System.out.println("");
+		// //System.out.println("");
+		// //System.out.println("");
 
 		return new CodeLocation(offset, length, startLine, startPosition, endLine, endPosition);
 	}
@@ -1665,9 +1703,9 @@ public class CSSParserListenerImpl implements CSSParserListener {
 	public void exitCalcsum(CalcsumContext ctx) {
 		if (ctxHasErrorNode(ctx)) {
 			log.debug("invalidating terms");
-			addCSSError(ctx, "Syntax error: " + ctx.getText());
+			addCSSError(ctx, "Calc sum syntax error: " + ctx.getText());
 			tmpDeclarationScope.invalid = true;
-			System.out.println("INVALID CALCSUM");
+			//System.out.println("INVALID CALCSUM");
 		}
 	}
 
@@ -1680,9 +1718,9 @@ public class CSSParserListenerImpl implements CSSParserListener {
 	public void exitCalcproduct(CalcproductContext ctx) {
 		if (ctxHasErrorNode(ctx)) {
 			log.debug("invalidating terms");
-			addCSSError(ctx, "Syntax error: " + ctx.getText());
+			addCSSError(ctx, "Calc product syntax error: " + ctx.getText());
 			tmpDeclarationScope.invalid = true;
-			System.out.println("INVALID CALCPRODUCT");
+			//System.out.println("INVALID CALCPRODUCT");
 		}
 	}
 
@@ -1695,9 +1733,9 @@ public class CSSParserListenerImpl implements CSSParserListener {
 	public void exitCalcvalue(CalcvalueContext ctx) {
 		if (ctxHasErrorNode(ctx)) {
 			log.debug("invalidating terms");
-			addCSSError(ctx, "Syntax error: " + ctx.getText());
+			addCSSError(ctx, "Calc value syntax error: " + ctx.getText());
 			tmpDeclarationScope.invalid = true;
-			System.out.println("INVALID CALCVALUE");
+			//System.out.println("INVALID CALCVALUE");
 		}
 	}
 
@@ -1786,7 +1824,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 		} else {
 			tmpOperator = Term.Operator.SPACE;
 		}
-		System.out.println("LEAVE OPERATOR: " + tmpOperator);
+		//System.out.println("LEAVE OPERATOR: " + tmpOperator);
 	}
 
 }

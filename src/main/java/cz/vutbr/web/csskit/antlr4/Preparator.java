@@ -13,6 +13,7 @@ import cz.vutbr.web.css.RuleMargin;
 import cz.vutbr.web.css.RuleNameSpace;
 import cz.vutbr.web.css.RuleSet;
 import cz.vutbr.web.css.Selector;
+import cz.vutbr.web.css.StyleSheet;
 
 /**
  * Prepares StyleSheet blocks in parser. Allows switching strategy in runtime,
@@ -93,7 +94,7 @@ public interface Preparator {
      * @param the uri
      * @return RuleImport
      */
-    public RuleImport prepareRuleImport(String uri, List<MediaQuery> importMediaQueryList);
+    public RuleImport prepareRuleImport(String uri, List<MediaQuery> importMediaQueryList, StyleSheet linkedStylesheet);
     
     public RuleNameSpace prepareRuleNamespace(String prefix, String uri);
     

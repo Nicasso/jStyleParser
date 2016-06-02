@@ -6,6 +6,7 @@ import java.util.List;
 import cz.vutbr.web.css.CSSNodeVisitor;
 import cz.vutbr.web.css.MediaQuery;
 import cz.vutbr.web.css.RuleImport;
+import cz.vutbr.web.css.StyleSheet;
 
 /**
  * URI with style sheet to be imported.
@@ -20,6 +21,7 @@ public class RuleImportImpl extends AbstractRuleBlock<String> implements RuleImp
 	/** URI of file to be imported */
     protected String uri;
     protected List<MediaQuery> importMediaQueryList;
+//    private StyleSheet linkedStylesheet;
     
     /** 
      * Creates empty RuleImport instance
@@ -126,5 +128,15 @@ public class RuleImportImpl extends AbstractRuleBlock<String> implements RuleImp
 			return false;
 		return true;
 	}
+//
+//	@Override
+//	public void setLinkedStylesheet(StyleSheet linkedStylesheet) {
+//		this.linkedStylesheet = linkedStylesheet;
+//	}
+//
+//	@Override
+//	public StyleSheet getLinkedStylesheet() {
+//		return linkedStylesheet;
+//	}
 
 }

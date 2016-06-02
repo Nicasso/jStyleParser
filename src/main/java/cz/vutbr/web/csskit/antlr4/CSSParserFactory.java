@@ -10,6 +10,7 @@ import org.w3c.dom.Element;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -70,7 +71,10 @@ public class CSSParserFactory {
                 .createStyleSheet().unlock();
 
         Preparator preparator = new SimplePreparator(inline, inlinePriority);
-        return parseAndImport(source, network, encoding, type, sheet, preparator, base, null);
+        
+        List<StyleSheet> sheets = new ArrayList<StyleSheet>();
+        
+        return parseAndImport(source, network, encoding, type, sheet, preparator, base, null, sheets, "");
     }
 
     /**
@@ -111,7 +115,10 @@ public class CSSParserFactory {
                              Element inline, boolean inlinePriority, StyleSheet sheet, URL base) throws IOException, CSSException {
 
         Preparator preparator = new SimplePreparator(inline, inlinePriority);
-        return parseAndImport(source, network, encoding, type, sheet, preparator, base, null);
+        
+        List<StyleSheet> sheets = new ArrayList<StyleSheet>();
+        
+        return parseAndImport(source, network, encoding, type, sheet, preparator, base, null, sheets, "");
     }
 
     /**
@@ -141,10 +148,18 @@ public class CSSParserFactory {
      * The imports are handled recursively.
      */
     protected StyleSheet parseAndImport(Object source, NetworkProcessor network, String encoding, SourceType type,
-                                        StyleSheet sheet, Preparator preparator, URL base, List<MediaQuery> media)
+                                        StyleSheet sheet, Preparator preparator, URL base, List<MediaQuery> media, List<StyleSheet> sheets, String name)
             throws CSSException, IOException {
+    	System.out.println("--------------");
+    	
+    	System.out.println("SOURCE: "+source.toString());
+    	
+    	sheet = (StyleSheet) CSSFactory.getRuleFactory().createStyleSheet().unlock();
+    	    	
         CSSParser parser = createParser(source, network, encoding, type, base);
         CSSParserListenerImpl extractor = parse(parser, type, preparator, media);
+        
+        addRulesToStyleSheet(extractor.getRules(), sheet);
         
         if (extractor.getStyleSheetComment() != null) {
         	sheet.setComment(extractor.getStyleSheetComment());
@@ -154,29 +169,37 @@ public class CSSParserFactory {
         
         sheet.setLocation(extractor.getStyleSheetLocation());
         
-        String[] paths = source.toString().split("\\/");
-        String name = paths[paths.length-1];
+        if(name == "") {
+	        String[] paths = source.toString().split("\\/");
+	        name = paths[paths.length-1];
+        }
+        
+        System.out.println("NAME:"+name);
+        System.out.println("LOCATION: "+extractor.getStyleSheetLocation().toString());
         
         sheet.setName(name);
-
-        for (int i = 0; i < extractor.getImportPaths().size(); i++) {
-            String path = extractor.getImportPaths().get(i);
-            List<MediaQuery> imedia = extractor.getImportMedia().get(i);
-
-            if (((imedia == null || imedia.isEmpty()) && CSSFactory.getAutoImportMedia().matchesEmpty()) //no media query specified
-                    || CSSFactory.getAutoImportMedia().matchesOneOf(imedia)) //or some media query matches to the autoload media spec
-            {
-                URL url = DataURLHandler.createURL(base, path);
-                try {
-                    parseAndImport(url, network, encoding, SourceType.URL, sheet, preparator, url, imedia);
-                } catch (IOException e) {
-                    log.warn("Couldn't read imported style sheet: {}", e.getMessage());
-                }
-            } else
-                log.trace("Skipping import {} (media not matching)", path);
-        }
-
-        return addRulesToStyleSheet(extractor.getRules(), sheet);
+        
+//        sheets.add(sheet);
+//        
+//        for (int i = 0; i < extractor.getImportPaths().size(); i++) {
+//            String path = extractor.getImportPaths().get(i);
+//            List<MediaQuery> imedia = extractor.getImportMedia().get(i);
+//            if (((imedia == null || imedia.isEmpty()) && CSSFactory.getAutoImportMedia().matchesEmpty()) //no media query specified
+//                    || CSSFactory.getAutoImportMedia().matchesOneOf(imedia)) //or some media query matches to the autoload media spec
+//            {
+//                URL url = DataURLHandler.createURL(base, path);
+//                System.out.println("URL: "+url.toString());
+//                try {
+//                	//StyleSheet newSheet = (StyleSheet) CSSFactory.getRuleFactory().createStyleSheet().unlock();
+//                    parseAndImport(url, network, encoding, SourceType.URL, sheet, preparator, url, imedia, sheets, path);
+//                } catch (IOException e) {
+//                	System.out.println(e.getMessage());
+//                }
+//            } else {
+//            	log.trace("Skipping import {} (media not matching)", path);
+//            }
+//        }
+        return sheet;
     }
 
     // creates the tree parser

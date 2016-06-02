@@ -23,5 +23,9 @@ public interface RuleImport extends RuleBlock<String>, PrettyOutput {
      * @param uri URI of file to be imported
      */
     public RuleImport setURI(String uri);
+    
+    //public void setLinkedStylesheet(StyleSheet linkedStylesheet);
+    
+    //public StyleSheet getLinkedStylesheet();
 
 }

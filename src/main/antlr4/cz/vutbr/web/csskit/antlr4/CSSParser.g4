@@ -219,8 +219,7 @@ media_expression
     }
 
 media_rule
-    : ruleset
-    | atstatement //-> INVALID_STATEMENT
+    : (S | comment)* ruleset | (S | comment)* atstatement
     ;
     catch [RecognitionException re] {
         log.error("Recognition exception | media_rule | should be empty");
