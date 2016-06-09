@@ -297,7 +297,7 @@ important
 
 //done
 property
-	: MINUS* IDENT S*
+	: (MINUS|IDENT|NUMBER)* S*
 	;
     catch [RecognitionException re]{
         log.error("PARSING property ERROR | should be empty");

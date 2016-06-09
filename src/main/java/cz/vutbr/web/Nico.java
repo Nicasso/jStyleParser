@@ -432,7 +432,7 @@ public class Nico {
 
 	public static void main(String[] arguments) throws Exception {
 		System.out.println("NICO");
-		new Nico();
+		new Nico2();
 	}
 
 }

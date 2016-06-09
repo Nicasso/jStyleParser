@@ -500,18 +500,18 @@ public class CSSParserListenerImpl implements CSSParserListener {
 	 */
 	public void enterProperty(CSSParser.PropertyContext ctx) {
 		logEnter("property: " + ctx.getText());
-		String property = extractTextUnescaped(ctx.IDENT().getText());
-		if (ctx.MINUS() != null) {
-			String newProp = "";
-			for(int i = 0; i < ctx.MINUS().size(); i++) {
-				newProp += "-";
-			}
-			newProp += property;
-			property = newProp;
-		}
+		String property = extractTextUnescaped(ctx.getText());
+//		if (ctx.MINUS() != null) {
+//			String newProp = "";
+//			for(int i = 0; i < ctx.MINUS().size(); i++) {
+//				newProp += "-";
+//			}
+//			newProp += property;
+//			property = newProp;
+//		}
 		tmpDeclarationScope.d.setProperty(property);
-		Token token = ctx.IDENT().getSymbol();
-		tmpDeclarationScope.d.setSource(extractSource((CSSToken) token));
+		//Token token = ctx.IDENT().getSymbol();
+		//tmpDeclarationScope.d.setSource(extractSource((CSSToken) token));
 		log.debug("Setting property: {}", tmpDeclarationScope.d.getProperty());
 	}
 
@@ -696,92 +696,97 @@ public class CSSParserListenerImpl implements CSSParserListener {
 	@Override
 	public void enterValuepart(CSSParser.ValuepartContext ctx) {
 		logEnter("valueparts: >" + ctx.getText() + "<");
-
-		// So that it doesn't break with this ugly CSS hack: padding: 5px 5px
-		// 5px 5px\0;
-		String text = ctx.getText().replaceAll("(\\\\[0-9])+$", "").trim();
-
-		if (ctx.MINUS() != null) {
-			terms_stack.peek().unary = -1;
-			terms_stack.peek().dash = true;
-		}
-		terms_stack.peek().op = tmpOperator;
-		if (ctx.COMMA() != null) {
-			log.debug("VP - comma");
-			//System.out.println("COMMAAAAAAAAAAAAAAAAAAAAA");
-			terms_stack.peek().op = Term.Operator.COMMA;
-		} else if (ctx.SLASH() != null) {
-			//System.out.println("SLASSSSSSSSSSSSH");
-			terms_stack.peek().op = Term.Operator.SLASH;
-		} else if (ctx.string() != null) {
-			// string
-			log.debug("VP - string");
-			terms_stack.peek().term = tf.createString(extractTextUnescaped(text));
-			terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
-		} else if (ctx.IDENT() != null) {
-			log.debug("VP - ident");
-			terms_stack.peek().term = tf.createIdent(extractTextUnescaped(text), terms_stack.peek().dash);
-			terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
-		} else if (ctx.HASH() != null) {
-			log.debug("VP - hash");
-			TermColor color = tf.createColor(text);
-			// color.setOriginalFormat(ctx.getText());
-			terms_stack.peek().term = color;
-			terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
-			if (terms_stack.peek().term == null) {
-				tmpDeclarationScope.invalid = true;
-				//System.out.println("enterValuepart INVALID");
+		try {
+			// So that it doesn't break with this ugly CSS hack: padding: 5px 5px
+			// 5px 5px\0;
+			String text = ctx.getText().replaceAll("(\\\\[0-9])+$", "").trim();
+	
+			if (ctx.MINUS() != null) {
+				terms_stack.peek().unary = -1;
+				terms_stack.peek().dash = true;
 			}
-		} else if (ctx.PERCENTAGE() != null) {
-			log.debug("VP - percentage");
-			terms_stack.peek().term = tf.createPercent(text, terms_stack.peek().unary);
-			terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
-		} else if (ctx.DIMENSION() != null) {
-			log.debug("VP - dimension");
-			String dim = text.trim();
-			//System.out.println(text);
-			//System.out.println(ctx.getText());
-			if (!text.trim().equals(ctx.getText().trim()) && isNumeric(dim)) {
-				terms_stack.peek().term = tf.createDimension(dim + "px", terms_stack.peek().unary);
+			terms_stack.peek().op = tmpOperator;
+			if (ctx.COMMA() != null) {
+				log.debug("VP - comma");
+				//System.out.println("COMMAAAAAAAAAAAAAAAAAAAAA");
+				terms_stack.peek().op = Term.Operator.COMMA;
+			} else if (ctx.SLASH() != null) {
+				//System.out.println("SLASSSSSSSSSSSSH");
+				terms_stack.peek().op = Term.Operator.SLASH;
+			} else if (ctx.string() != null) {
+				// string
+				log.debug("VP - string");
+				terms_stack.peek().term = tf.createString(extractTextUnescaped(text));
+				terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
+			} else if (ctx.IDENT() != null) {
+				log.debug("VP - ident");
+				terms_stack.peek().term = tf.createIdent(extractTextUnescaped(text), terms_stack.peek().dash);
+				terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
+			} else if (ctx.HASH() != null) {
+				log.debug("VP - hash");
+				TermColor color = tf.createColor(text);
+				// color.setOriginalFormat(ctx.getText());
+				terms_stack.peek().term = color;
 				terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
 				if (terms_stack.peek().term == null) {
-					log.info("Unable to create dimension from {}, unary {}", dim, terms_stack.peek().unary);
 					tmpDeclarationScope.invalid = true;
-					//System.out.println("INVALID DIMENSION");
+					//System.out.println("enterValuepart INVALID");
 				}
-			} else {
-				terms_stack.peek().term = tf.createDimension(dim, terms_stack.peek().unary);
-				// TODO: IE HACK like padding: 5px 5px 5px 5px\0; BREAKS HERE!
-				//System.out.println(terms_stack.peek().term);
-				//System.out.println("-------------");
+			} else if (ctx.PERCENTAGE() != null) {
+				log.debug("VP - percentage");
+				terms_stack.peek().term = tf.createPercent(text, terms_stack.peek().unary);
+				terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
+			} else if (ctx.DIMENSION() != null) {
+				log.debug("VP - dimension");
+				String dim = text.trim();
+				//System.out.println(text);
 				//System.out.println(ctx.getText());
-				//System.out.println(dim);
-				terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
-				if (terms_stack.peek().term == null) {
-					log.info("Unable to create dimension from {}, unary {}", dim, terms_stack.peek().unary);
-					tmpDeclarationScope.invalid = true;
-					//System.out.println("INVALID DIMENSION AGAIN");
+				if (!text.trim().equals(ctx.getText().trim()) && isNumeric(dim)) {
+					terms_stack.peek().term = tf.createDimension(dim + "px", terms_stack.peek().unary);
+					terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
+					if (terms_stack.peek().term == null) {
+						log.info("Unable to create dimension from {}, unary {}", dim, terms_stack.peek().unary);
+						tmpDeclarationScope.invalid = true;
+						//System.out.println("INVALID DIMENSION");
+					}
+				} else {
+					terms_stack.peek().term = tf.createDimension(dim, terms_stack.peek().unary);
+					// TODO: IE HACK like padding: 5px 5px 5px 5px\0; BREAKS HERE!
+					//System.out.println(terms_stack.peek().term);
+					//System.out.println("-------------");
+					//System.out.println(ctx.getText());
+					//System.out.println(dim);
+					terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
+					if (terms_stack.peek().term == null) {
+						log.info("Unable to create dimension from {}, unary {}", dim, terms_stack.peek().unary);
+						tmpDeclarationScope.invalid = true;
+						//System.out.println("INVALID DIMENSION AGAIN");
+					}
 				}
+			} else if (ctx.NUMBER() != null) {
+				log.debug("VP - number");
+				//System.out.println("NUMBER");
+				terms_stack.peek().term = tf.createNumeric(text, terms_stack.peek().unary);
+				terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
+			} else if (ctx.URI() != null) {
+				log.debug("VP - uri");
+				terms_stack.peek().term = tf.createURI(extractTextUnescaped(text), extractBase(ctx.URI()));
+				terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
+			} else if (ctx.funct() != null) {
+				terms_stack.peek().term = null;
+				// served in function
+				log.debug("function is server later");
+			} else {
+				log.error("unhandled valueparts");
+				terms_stack.peek().term = null;
+				tmpDeclarationScope.invalid = true;
+				addCSSError(ctx, "Value part syntax error: " + ctx.getText());
+				//System.out.println("INVALID VALUEPARTS");
 			}
-		} else if (ctx.NUMBER() != null) {
-			log.debug("VP - number");
-			//System.out.println("NUMBER");
-			terms_stack.peek().term = tf.createNumeric(text, terms_stack.peek().unary);
-			terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
-		} else if (ctx.URI() != null) {
-			log.debug("VP - uri");
-			terms_stack.peek().term = tf.createURI(extractTextUnescaped(text), extractBase(ctx.URI()));
-			terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
-		} else if (ctx.funct() != null) {
-			terms_stack.peek().term = null;
-			// served in function
-			log.debug("function is server later");
-		} else {
-			log.error("unhandled valueparts");
+		} catch(Exception e) {
 			terms_stack.peek().term = null;
 			tmpDeclarationScope.invalid = true;
 			addCSSError(ctx, "Value part syntax error: " + ctx.getText());
-			//System.out.println("INVALID VALUEPARTS");
 		}
 	}
 

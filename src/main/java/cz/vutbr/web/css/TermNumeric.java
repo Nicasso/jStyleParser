@@ -31,6 +31,7 @@ public interface TermNumeric<T extends Number> extends Term<T> {
     	pt("pt"),
     	pc("pc"),
         px("px"),
+        dpx("dpx"),
     	deg("deg"),
     	rad("rad"),
     	grad("grad"),
@@ -68,6 +69,7 @@ public interface TermNumeric<T extends Number> extends Term<T> {
                 case q:
                 case pc:
                 case px:
+                case dpx:
                 case em:
                 case ex:
                 case ch:
