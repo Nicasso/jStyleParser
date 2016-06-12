@@ -1116,7 +1116,8 @@ public class CSSParserListenerImpl implements CSSParserListener {
 					} else if (ctx.selector() != null) {
 						value += ctx.selector().getText();
 					} else {
-						throw new UnsupportedOperationException("unknown state");
+						//throw new UnsupportedOperationException("unknown state");
+						addCSSError(ctx, "Pseudo selector syntax error: " + ctx.getText());
 					}
 				}
 				tmpPseudo = rf.createPseudoPage(value, first);
