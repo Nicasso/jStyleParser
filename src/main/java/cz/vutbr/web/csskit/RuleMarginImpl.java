@@ -22,19 +22,6 @@ public class RuleMarginImpl extends AbstractRuleBlock<Declaration> implements Ru
 			throw new IllegalArgumentException("Illegal value for margin area: " + area);
 	}
 	
-	/**
-	 * Accept method required by the visitor pattern for traversing the CSS Tree. 
-	 * 
-	 * @param visitor
-	 * 	The visitor interface
-	 * @return
-	 * 	The current CSS Object
-	 */
-	@Override
-	public Object accept(CSSNodeVisitor visitor) {
-		return visitor.visit(this);
-	}
-
 	public MarginArea getMarginArea() {
 		return marginArea;
 	}

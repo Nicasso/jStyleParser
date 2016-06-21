@@ -1173,19 +1173,6 @@ public class SelectorImpl extends AbstractRule<Selector.SelectorPart> implements
 			this.inlinePriority = inlinePriority;
 		}
 
-		/**
-		 * Accept method required by the visitor pattern for traversing the CSS
-		 * Tree.
-		 * 
-		 * @param visitor
-		 *            The visitor interface
-		 * @return The current CSS Object
-		 */
-		@Override
-		public Object accept(CSSNodeVisitor visitor) {
-			return visitor.visit(this);
-		}
-
 		public Element getElement() {
 			return elem;
 		}
@@ -1237,6 +1224,12 @@ public class SelectorImpl extends AbstractRule<Selector.SelectorPart> implements
 			} else if (!elem.equals(other.elem))
 				return false;
 			return true;
+		}
+
+		@Override
+		public Object accept(CSSNodeVisitor visitor) {
+			// TODO Auto-generated method stub
+			return null;
 		}
 	}
 	

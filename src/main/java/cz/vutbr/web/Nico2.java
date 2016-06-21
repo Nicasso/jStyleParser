@@ -149,30 +149,6 @@ public class Nico2 implements CSSNodeVisitor  {
 		return null;
 	}
 
-	/**
-	 * Isn't this handled already? Check it out!
-	 */
-	@Override
-	public Void visit(MediaSpec node) {
-		System.out.println("MediaSpec");
-		return null;
-	}
-
-	/**
-	 * Wtf is this?! Never called so far.
-	 */
-	@Override
-	public Void visit(RuleArrayList node) {
-		System.out.println("RuleArrayList");
-
-		for (Iterator<RuleBlock<?>> it = node.iterator(); it.hasNext();) {
-			RuleBlock<?> r = it.next();
-			r.accept(this);
-		}
-
-		return null;
-	}
-
 	@Override
 	public Void visit(RuleFontFace node) {
 		System.out.println("RuleFontFace");
@@ -181,21 +157,6 @@ public class Nico2 implements CSSNodeVisitor  {
 			Declaration d = it.next();
 			d.accept(this);
 		}
-		return null;
-	}
-
-	/**
-	 * No clue when this is used.
-	 */
-	@Override
-	public Void visit(RuleMargin node) {
-		System.out.println("RuleMargin");
-
-		for (Iterator<Declaration> it = node.iterator(); it.hasNext();) {
-			Declaration d = it.next();
-			d.accept(this);
-		}
-
 		return null;
 	}
 
@@ -306,16 +267,6 @@ public class Nico2 implements CSSNodeVisitor  {
 		return null;
 	}
 
-	/**
-	 * This one can go? Since all its children are covered?
-	 */
-	@Override
-	public Void visit(TermFloatValue node) {
-		System.out.println("TermFloatValue");
-		System.out.println("\t" + node.getValue() + " " + node.getUnit());
-		return null;
-	}
-
 	@Override
 	public Void visit(TermFrequency node) {
 		System.out.println("TermFrequency");
@@ -360,15 +311,6 @@ public class Nico2 implements CSSNodeVisitor  {
 		
 		return null;
 		
-	}
-
-	/**
-	 * This one can go?
-	 */
-	@Override
-	public Void visit(TermList node) {
-		System.out.println("TermList");
-		return null;
 	}
 
 	@Override
@@ -433,18 +375,6 @@ public class Nico2 implements CSSNodeVisitor  {
 	public Void visit(ElementClass node) {
 		System.out.println("ElementClass");
 		System.out.println("\t" + node.getClassName());
-		
-		return null;
-	}
-
-	/**
-	 *  This one can go I guess? ElementName really handles stuff like "div" and "span". Not this one.
-	 *  Not even visited so far.
-	 */
-	@Override
-	public Void visit(ElementDOM node) {
-		System.out.println("ElementDOM");
-		System.out.println("\t" + node.getElement());
 		
 		return null;
 	}

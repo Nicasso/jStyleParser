@@ -24,20 +24,6 @@ public class TermFloatValueImpl extends TermNumericImpl<Float> implements TermFl
 	public void setLocation(CodeLocation location) {
 		this.location = location;
 	}
-	
-	
-	/**
-	 * Accept method required by the visitor pattern for traversing the CSS Tree. 
-	 * 
-	 * @param visitor
-	 * 	The visitor interface
-	 * @return
-	 * 	The current CSS Object
-	 */
-	@Override
-	public Object accept(CSSNodeVisitor visitor) {
-		return visitor.visit(this);
-	}
 
     @Override
     public TermNumeric<Float> setZero()

@@ -17,10 +17,8 @@ public interface CSSNodeVisitor {
 	public Object visit(KeyframesPercentage node);
 	public Object visit(KeyframesIdent node);
 	
-	public Object visit(RuleArrayList node);
 	public Object visit(RuleCharset node);
 	public Object visit(RuleFontFace node);
-	public Object visit(RuleMargin node);
 	public Object visit(RuleCounterStyle node);
 	public Object visit(RuleNameSpace node);
 	public Object visit(RuleMedia node);
@@ -36,27 +34,23 @@ public interface CSSNodeVisitor {
 	public Object visit(Selector node);
 	public Object visit(Selector.ElementAttribute node);
 	public Object visit(Selector.ElementClass node);
-	public Object visit(Selector.ElementDOM node);
 	public Object visit(Selector.ElementID node);
 	public Object visit(Selector.ElementName node);
 	public Object visit(Selector.PseudoPage node);
 	
 	public Object visit(MediaExpression node);
 	public Object visit(MediaQuery node);
-	public Object visit(MediaSpec node);
 	
 	public Object visit(TermAngle node);
 	public Object visit(TermAudio node);
 	public Object visit(TermColor node);
 	public Object visit(TermCalc node);
 	public Object visit(TermExpression node);
-	public Object visit(TermFloatValue node);
 	public Object visit(TermLength node);
 	public Object visit(TermFrequency node);
 	public Object visit(TermFunction node);
 	public Object visit(TermIdent node);
 	public Object visit(TermInteger node);
-	public Object visit(TermList node);
 	public Object visit(TermNumber node);
 	public Object visit(TermPercent node);
 	public Object visit(TermResolution node);

@@ -24,19 +24,6 @@ public class TermListImpl extends AbstractList<Term<?>> implements TermList {
 	}
 	
 	/**
-	 * Accept method required by the visitor pattern for traversing the CSS Tree. 
-	 * 
-	 * @param visitor
-	 * 	The visitor interface
-	 * @return
-	 * 	The current CSS Object
-	 */
-	@Override
-	public Object accept(CSSNodeVisitor visitor) {
-		return visitor.visit(this);
-	}
-	
-	/**
 	 * @return the value
 	 */
 	public List<Term<?>> getValue() {
@@ -162,6 +149,12 @@ public class TermListImpl extends AbstractList<Term<?>> implements TermList {
 	@Override
 	public void setLocation(CodeLocation location) {
 		this.location = location;
+	}
+
+	@Override
+	public Object accept(CSSNodeVisitor visitor) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
