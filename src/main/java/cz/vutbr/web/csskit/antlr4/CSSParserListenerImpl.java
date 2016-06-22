@@ -104,6 +104,8 @@ public class CSSParserListenerImpl implements CSSParserListener {
 	private CSSComment tmpStyleSheetComment;
 	private CSSComment tmpDeclarationComment;
 	private CSSComment tmpStatementComment;
+	private CSSComment tmpMediaRuleComment;
+	private CSSComment tmpKeyframeComment;
 
 	private List<CSSError> errorList;
 
@@ -395,27 +397,20 @@ public class CSSParserListenerImpl implements CSSParserListener {
 		// logLeave("ruleset" +ctx.getText());
 		// complete ruleset and add to ruleList
 		
-		if (ctx.norule() == null) {
-		
-			tmpAtStatementOrRuleSetScope.stm = preparator.prepareRuleSet(tmpCombinedSelectorList, tmpDeclarations,
-					(this.wrapMedia != null && !this.wrapMedia.isEmpty()), this.wrapMedia);
-			
-			if (tmpAtStatementOrRuleSetScope.stm != null && !ctxHasErrorNode(ctx)) {
-				tmpAtStatementOrRuleSetScope.stm.setLocation(getCodeLocation(ctx, 0));
-				tmpRuleList.add(tmpAtStatementOrRuleSetScope.stm);
-				
-			}
-			
-			if (ctxHasErrorNode(ctx)) {
-				log.debug("invalidating ruleset");
-				addCSSError(ctx, "Ruleset syntax error: " + ctx.getText());
-			}
-		}
-		
 		if (ctxHasErrorNode(ctx)) {
 			log.debug("invalidating ruleset");
 			addCSSError(ctx, "Ruleset syntax error: " + ctx.getText());
+			return;
 		}
+		
+		tmpAtStatementOrRuleSetScope.stm = preparator.prepareRuleSet(tmpCombinedSelectorList, tmpDeclarations,
+				(this.wrapMedia != null && !this.wrapMedia.isEmpty()), this.wrapMedia);
+		
+		if (tmpAtStatementOrRuleSetScope.stm != null && !ctxHasErrorNode(ctx)) {
+			tmpAtStatementOrRuleSetScope.stm.setLocation(getCodeLocation(ctx, 0));
+			tmpRuleList.add(tmpAtStatementOrRuleSetScope.stm);	
+		}
+		
 		// cleanup tmpDeclarations
 		tmpDeclarations = null;
 	}
@@ -1348,10 +1343,10 @@ public class CSSParserListenerImpl implements CSSParserListener {
 
 			tmpAtStatementOrRuleSetScope.stm = preparator.prepareRuleKeyFrames(ctx.name.getText(), keyFrameList);
 			
-			if (tmpStatementComment != null) {
-				tmpAtStatementOrRuleSetScope.stm.setComment(tmpStatementComment);
-				tmpStatementComment = null;
-			}
+//			if (tmpStatementComment != null) {
+//				tmpAtStatementOrRuleSetScope.stm.setComment(tmpStatementComment);
+//				tmpStatementComment = null;
+//			}
 			
 			tmpAtStatementOrRuleSetScope.stm.setLocation(getCodeLocation(ctx, 0));
 		} else {
@@ -1573,6 +1568,39 @@ public class CSSParserListenerImpl implements CSSParserListener {
 	@Override
 	public void exitMedia_rule(CSSParser.Media_ruleContext ctx) {
 		List<RuleSet> tmpAtStatementRules = null;
+		
+		if (ctx.ruleset() != null) {
+			if (stmtIsValid) {
+				//System.out.println(tmpRuleList.size());
+				for (RuleBlock<?> rule : tmpRuleList) {
+					if (rule != null) {
+						if (tmpMediaRuleComment != null) {
+							rule.setComment(tmpMediaRuleComment);
+							rule.setLocation(getCodeLocation(ctx, 0));
+							tmpMediaRuleComment = null;
+						}
+						log.debug("exitStatement |ADDING statement {}", rule);
+						rules.add(rule);
+					} else {
+						log.debug("exitStatement |ommited null statement ");
+					}
+				}
+			} else {
+				log.debug("exitStatement | statement is not valid, so not adding it");
+			}
+		} else {
+			if (tmpAtStatementOrRuleSetScope.stm != null) {
+				log.debug("exitStatement | ADDING statement {}", tmpAtStatementOrRuleSetScope.stm);
+
+				if (tmpMediaRuleComment != null) {
+					tmpAtStatementOrRuleSetScope.stm.setComment(tmpMediaRuleComment);
+					tmpAtStatementOrRuleSetScope.stm.setLocation(getCodeLocation(ctx, 0));
+					tmpMediaRuleComment = null;
+				}
+
+				rules.add(tmpAtStatementOrRuleSetScope.stm);
+			}
+		}
 	}
 
 	@Override
@@ -1621,12 +1649,17 @@ public class CSSParserListenerImpl implements CSSParserListener {
 		cz.vutbr.web.css.CodeLocation location = getCodeLocation(ctx, 0);
 
 		String context = ctx.getParent().getClass().getSimpleName();
+		System.out.println("CONTEXT: "+context);
 		if (tmpStyleSheetComment == null && preventStyleSheetComment == false) {
 			tmpStyleSheetComment = new CommentImpl(ctx.getText(), location);
-		} else if (context.equals("StatementContext") || context.equals("Keyframes_blockContext")) {
+		} else if (context.equals("StatementContext")) {
 			tmpStatementComment = new CommentImpl(ctx.getText(), location);
 		} else if (context.equals("DeclarationContext")) {
 			tmpDeclarationComment = new CommentImpl(ctx.getText(), location);
+		} else if (context.equals("Keyframes_blockContext")) {
+			tmpKeyframeComment = new CommentImpl(ctx.getText(), location);
+		} else if (context.equals("Media_ruleContext")) {
+			tmpMediaRuleComment = new CommentImpl(ctx.getText(), location);
 		}
 	}
 
@@ -1806,10 +1839,18 @@ public class CSSParserListenerImpl implements CSSParserListener {
 	public void exitKeyframes_block(Keyframes_blockContext ctx) {
 		tmpAtStatementOrRuleSetScope.stm = preparator.prepareRuleSet(tmpCombinedSelectorList, tmpDeclarations,
 				(this.wrapMedia != null && !this.wrapMedia.isEmpty()), this.wrapMedia);
+		
 		if (tmpAtStatementOrRuleSetScope.stm != null && !ctxHasErrorNode(ctx)) {
 			tmpAtStatementOrRuleSetScope.stm.setLocation(getCodeLocation(ctx, 0));
+			
+			if (tmpKeyframeComment != null) {
+				tmpAtStatementOrRuleSetScope.stm.setComment(tmpKeyframeComment);
+				tmpKeyframeComment = null;
+			}
+			
 			tmpRuleList.add(tmpAtStatementOrRuleSetScope.stm);
 		}
+		
 		// cleanup tmpDeclarations
 		tmpDeclarations = null;
 	}

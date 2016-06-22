@@ -1,9 +1,15 @@
-/* Stylesheet comment */
+/* style sheet comment */
 
-/* Media rule comment */
-@media only screen and (max-width : 410px) {
-  /* Declaration comment */
-  article {
-    width: 89%;
-  }
+/* keyframes comment */
+@keyframes mymove {
+    /* rule-set 1 */
+    from {
+      /* declaration comment 1 */
+      top: 0px;
+    }
+    /* rule-set 2 */
+    to {
+      /* declaration comment 2 */
+      top: 10px;
+    }
 }

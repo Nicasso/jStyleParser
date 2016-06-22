@@ -104,6 +104,9 @@ public class Nico2 implements CSSNodeVisitor  {
 		System.out.println("Declaration");
 		System.out.println("\t" + node.getProperty());
 		
+		if (node.getComment() != null) {
+			System.out.println("\t" + node.getComment().getText());
+		}
 
 		for (Iterator<Term<?>> it = node.iterator(); it.hasNext();) {
 			Term<?> t = it.next();
@@ -152,6 +155,10 @@ public class Nico2 implements CSSNodeVisitor  {
 	@Override
 	public Void visit(RuleFontFace node) {
 		System.out.println("RuleFontFace");
+		
+		if (node.getComment() != null) {
+			System.out.println("\t" + node.getComment().getText());
+		}
 
 		for (Iterator<Declaration> it = node.iterator(); it.hasNext();) {
 			Declaration d = it.next();
@@ -163,6 +170,10 @@ public class Nico2 implements CSSNodeVisitor  {
 	@Override
 	public Void visit(RuleMedia node) {
 		System.out.println("RuleMedia");
+		
+		if (node.getComment() != null) {
+			System.out.println("\t" + node.getComment().getText());
+		}
 
 		for (Iterator<MediaQuery> it = node.getMediaQueries().iterator(); it.hasNext();) {
 			MediaQuery m = it.next();
@@ -179,6 +190,10 @@ public class Nico2 implements CSSNodeVisitor  {
 	@Override
 	public Void visit(RulePage node) {
 		System.out.println("RulePage");
+		
+		if (node.getComment() != null) {
+			System.out.println("\t" + node.getComment().getText());
+		}
 
 		for (Iterator<Rule<?>> it = node.iterator(); it.hasNext();) {
 			Rule<?> r = it.next();
@@ -190,6 +205,10 @@ public class Nico2 implements CSSNodeVisitor  {
 	@Override
 	public Void visit(RuleSet node) {
 		System.out.println("RuleSet");
+		
+		if (node.getComment() != null) {
+			System.out.println("\t" + node.getComment().getText());
+		}
 
 		for (CombinedSelector cs : node.getSelectors()) {
 			cs.accept(this);
@@ -204,6 +223,10 @@ public class Nico2 implements CSSNodeVisitor  {
 	@Override
 	public Void visit(RuleViewport node) {
 		System.out.println("RuleViewport");
+		
+		if (node.getComment() != null) {
+			System.out.println("\t" + node.getComment().getText());
+		}
 
 		for (Iterator<Declaration> it = node.iterator(); it.hasNext();) {
 			Declaration d = it.next();
@@ -228,6 +251,10 @@ public class Nico2 implements CSSNodeVisitor  {
 	@Override
 	public Void visit(StyleSheet node) {
 		System.out.println("StyleSheet");
+		
+		if (node.getComment() != null) {
+			System.out.println("\t" + node.getComment().getText());
+		}
 		
 		for (Iterator<RuleBlock<?>> it = node.iterator(); it.hasNext();) {
 			RuleBlock<?> r = it.next();
@@ -408,6 +435,10 @@ public class Nico2 implements CSSNodeVisitor  {
 		System.out.println("RuleImport");
 		System.out.println("\t" + node.getURI());
 		
+		if (node.getComment() != null) {
+			System.out.println("\t" + node.getComment().getText());
+		}
+		
 		if (node.getMediaQueries().size() != 0) {
 			for (Iterator<MediaQuery> it = node.getMediaQueries().iterator(); it.hasNext();) {
 				MediaQuery m = it.next();
@@ -431,6 +462,10 @@ public class Nico2 implements CSSNodeVisitor  {
 		System.out.println("RuleCharset");
 		System.out.println("\t" + node.getCharset());
 		
+		if (node.getComment() != null) {
+			System.out.println("\t" + node.getComment().getText());
+		}
+		
 		return null;
 	}
 
@@ -444,7 +479,10 @@ public class Nico2 implements CSSNodeVisitor  {
 	@Override
 	public Object visit(RuleCounterStyle node) {
 		System.out.println("RuleCounterStyle");
-
+		
+		if (node.getComment() != null) {
+			System.out.println("\t" + node.getComment().getText());
+		}
 		
 		for (Iterator<Declaration> it = node.iterator(); it.hasNext();) {
 			Declaration d = it.next();
@@ -457,6 +495,10 @@ public class Nico2 implements CSSNodeVisitor  {
 	public Object visit(RuleNameSpace node) {
 		System.out.println("RuleNameSpace");
 		System.out.println("\t" + node.getUri());
+		
+		if (node.getComment() != null) {
+			System.out.println("\t" + node.getComment().getText());
+		}
 		
 		return null;
 	}
@@ -480,6 +522,10 @@ public class Nico2 implements CSSNodeVisitor  {
 	@Override
 	public Object visit(RuleKeyframes node) {
 		System.out.println("RuleKeyframes");
+		
+		if (node.getComment() != null) {
+			System.out.println("\t" + node.getComment().getText());
+		}
 
 		for (Iterator<RuleSet> it = node.iterator(); it.hasNext();) {
 			RuleSet r = it.next();

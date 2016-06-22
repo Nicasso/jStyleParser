@@ -243,7 +243,7 @@ ruleset
 	  	declarations
 	  RCURLY
 	  //-> ^(RULE combined_selector+ declarations)
-	| norule //-> INVALID_STATEMENT
+	//| norule //-> INVALID_STATEMENT
 	;
     catch [RecognitionException re] {
 	    log.debug("PARSING ruleset ERROR | consume until RCURLY and add INVALID_STATEMENT");
