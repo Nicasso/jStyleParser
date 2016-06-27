@@ -425,7 +425,8 @@ public class Nico2 implements CSSNodeVisitor  {
 	@Override
 	public Void visit(PseudoPage node) {
 		System.out.println("PseudoPage");
-		System.out.println("\t" + node.getValue());
+		System.out.println("\t value: " + node.getValue());
+		System.out.println("\t elem: " + node.getDeclaration().isPseudoElement());
 		
 		return null;
 	}
