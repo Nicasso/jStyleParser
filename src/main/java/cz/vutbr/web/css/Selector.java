@@ -85,6 +85,7 @@ public interface Selector extends Rule<Selector.SelectorPart> {
         DISABLED("disabled", false),
         CHECKED("checked", false),
         TARGET("target", false),
+        NOT("not", false),
         
         FIRST_LINE("first-line", true),
         FIRST_LETTER("first-letter", true),
@@ -92,7 +93,7 @@ public interface Selector extends Rule<Selector.SelectorPart> {
         AFTER("after", true);
         
         private String value;
-        private boolean element;
+        private boolean element = false;
         
         private PseudoDeclaration(String value, boolean isElement) {
             this.value = value;

@@ -449,6 +449,7 @@ public class SelectorImpl extends AbstractRule<Selector.SelectorPart> implements
 			PSEUDO_DECLARATIONS.put("disabled", PseudoDeclaration.DISABLED);
 			PSEUDO_DECLARATIONS.put("checked", PseudoDeclaration.CHECKED);
 			PSEUDO_DECLARATIONS.put("target", PseudoDeclaration.TARGET);
+			PSEUDO_DECLARATIONS.put("not", PseudoDeclaration.NOT);
 
 			PSEUDO_DECLARATIONS.put("first-letter", PseudoDeclaration.FIRST_LETTER);
 			PSEUDO_DECLARATIONS.put("first-line", PseudoDeclaration.FIRST_LINE);
@@ -489,6 +490,8 @@ public class SelectorImpl extends AbstractRule<Selector.SelectorPart> implements
 		private int[] elementIndex;
 
 		protected PseudoPageImpl(String value, String functionName) {
+			System.out.println("VAL:"+value);
+			System.out.println("FN:"+functionName);
 			setValue(value);
 			setFunctionName(functionName);
 		}
@@ -849,17 +852,25 @@ public class SelectorImpl extends AbstractRule<Selector.SelectorPart> implements
 		}
 
 		private void inferDeclaration() {
-			if (functionName != null)
+			if (functionName != null) {
+				System.out.println("INFER1: "+functionName);
+				if (functionName.toLowerCase().endsWith("(")) {
+					functionName = functionName.substring(0, functionName.length()-1);
+				}
+				System.out.println("INFER1.1: "+functionName);
 				declaration = PSEUDO_DECLARATIONS.get(functionName.toLowerCase()); // Pseudo-element
 																					// and
 																					// pseudo-class
 																					// names
 																					// are
 																					// case-insensitive
-			else if (value != null)
+			} else if (value != null) {
+				System.out.println("INFER2: "+value);
 				declaration = PSEUDO_DECLARATIONS.get(value.toLowerCase());
-			else
+			} else {
+				System.out.println("INFER3: PROBLEM");
 				declaration = null;
+			}
 		}
 
 		private void decodeValue() {
@@ -871,6 +882,7 @@ public class SelectorImpl extends AbstractRule<Selector.SelectorPart> implements
 				try {
 					elementIndex = decodeIndex(value);
 				} catch (NumberFormatException e) {
+					System.out.println("ERROR: "+e.getMessage());
 				}
 			}
 		}

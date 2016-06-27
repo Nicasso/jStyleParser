@@ -53,6 +53,7 @@ import cz.vutbr.web.css.Selector.ElementID;
 import cz.vutbr.web.css.Selector.ElementName;
 import cz.vutbr.web.css.Selector.KeyframesIdent;
 import cz.vutbr.web.css.Selector.KeyframesPercentage;
+import cz.vutbr.web.css.Selector.PseudoDeclaration;
 import cz.vutbr.web.css.Selector.PseudoPage;
 import cz.vutbr.web.css.Selector.SelectorPart;
 import cz.vutbr.web.csskit.RuleArrayList;
@@ -425,8 +426,21 @@ public class Nico2 implements CSSNodeVisitor  {
 	@Override
 	public Void visit(PseudoPage node) {
 		System.out.println("PseudoPage");
+		System.out.println("\t function: " + node.getFunctionName());
 		System.out.println("\t value: " + node.getValue());
-		System.out.println("\t elem: " + node.getDeclaration().isPseudoElement());
+		System.out.println("\t decl: " + node.getDeclaration());
+		
+		boolean element = false;
+		
+		switch(node.getDeclaration()) {
+			case AFTER: element = true;
+			case BEFORE: element = true;
+			case FIRST_LETTER: element = true;
+			case FIRST_LINE: element = true;
+			default: element = false;
+		}
+		
+		System.out.println("\t elem: " + element);
 		
 		return null;
 	}
