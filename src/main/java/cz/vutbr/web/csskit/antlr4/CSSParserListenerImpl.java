@@ -315,7 +315,6 @@ public class CSSParserListenerImpl implements CSSParserListener {
 				rules.add(rb);
 			}
 		}
-		log.debug("\n***\n{}\n***\n", rules);
 		logLeave("inlinestyle: " + ctx.getText());
 		log.trace("EXITING INLINESTYLE ----------------------------------");
 		tmpDeclarations = null;
@@ -331,7 +330,6 @@ public class CSSParserListenerImpl implements CSSParserListener {
 
 	@Override
 	public void exitStylesheet(CSSParser.StylesheetContext ctx) {
-		log.debug("\n***\n{}\n***\n", rules);
 		logLeave("stylesheet");
 		log.trace("EXITING STYLESHEET ----------------------------------");
 	}
@@ -1315,11 +1313,12 @@ public class CSSParserListenerImpl implements CSSParserListener {
 			tmpAtStatementOrRuleSetScope.stm = preparator.prepareRuleFontFace(tmpDeclarations);
 			tmpAtStatementOrRuleSetScope.stm.setLocation(getCodeLocation(ctx, 0));
 		} else if (ctx.MEDIA() != null) {
-			log.debug("exitAtstatement MEDIA");
+			logLeave("exitAtstatement MEDIA");
 			if (ctx.media() == null) {
 				// media is not set, set empty
 				mediaQueryList = new ArrayList<>();
 			}
+			
 			List<RuleSet> mediaRulesList = new ArrayList<>();
 			if (ctx.media_rule() != null) {
 				for (RuleBlock<?> rule : tmpRuleList) {
@@ -1580,7 +1579,8 @@ public class CSSParserListenerImpl implements CSSParserListener {
 							tmpMediaRuleComment = null;
 						}
 						log.debug("exitStatement |ADDING statement {}", rule);
-						rules.add(rule);
+						System.out.println("???????????WTF??!??!?!?!?!?!?!?!?!?!??!?!");
+						//rules.add(rule);
 					} else {
 						log.debug("exitStatement |ommited null statement ");
 					}
@@ -1597,8 +1597,8 @@ public class CSSParserListenerImpl implements CSSParserListener {
 					tmpAtStatementOrRuleSetScope.stm.setLocation(getCodeLocation(ctx, 0));
 					tmpMediaRuleComment = null;
 				}
-
-				rules.add(tmpAtStatementOrRuleSetScope.stm);
+				System.out.println("WTF??!??!?!?!?!?!?!?!?!?!??!?!");
+				//rules.add(tmpAtStatementOrRuleSetScope.stm);
 			}
 		}
 	}
