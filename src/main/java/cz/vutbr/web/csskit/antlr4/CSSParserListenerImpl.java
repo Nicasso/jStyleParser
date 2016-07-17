@@ -598,10 +598,9 @@ public class CSSParserListenerImpl implements CSSParserListener {
 				TermFunction function = tf.createFunction();
 				// log.debug("function name to " + fname);
 				function.setFunctionName("expression");
-				if (terms_stack.peek().unary == -1) // if started with minus,
-													// add the minus to the
-													// function name
-					function.setFunctionName('-' + function.getFunctionName());
+//				if (terms_stack.peek().unary == -1) {
+//					function.setFunctionName('-' + function.getFunctionName());
+//				}
 	
 				TermString val = tf.createString(ctx.getText());
 				val.setLocation(getCodeLocation(ctx, 0));
@@ -629,7 +628,6 @@ public class CSSParserListenerImpl implements CSSParserListener {
 				terms_stack.peek().term.setLocation(getCodeLocation(ctx, 0));
 			} else {
 				String fname = extractTextUnescaped(ctx.FUNCTION().getText());
-	
 				if (fname.equalsIgnoreCase("url")) {
 					if (terms_stack.peek().unary == -1 || tmpTermList == null || tmpTermList.size() != 1) {
 						tmpDeclarationScope.invalid = true;
@@ -666,10 +664,10 @@ public class CSSParserListenerImpl implements CSSParserListener {
 					TermFunction function = tf.createFunction();
 					// log.debug("function name to " + fname);
 					function.setFunctionName(fname);
-					if (terms_stack.peek().unary == -1) // if started with minus,
-														// add the minus to the
-														// function name
-						function.setFunctionName('-' + function.getFunctionName());
+//					if (terms_stack.peek().unary == -1) {
+//						System.out.println("KRAKRKARKAKRAKRAKAKRAKRA: "+fname);
+//						function.setFunctionName('-' + function.getFunctionName());
+//					}
 					if (tmpTermList != null) {
 						// log.debug("setting function value to : {}", tmpTermList);
 						function.setValue(tmpTermList);
@@ -694,7 +692,8 @@ public class CSSParserListenerImpl implements CSSParserListener {
 			// 5px 5px\0;
 			String text = ctx.getText().replaceAll("(\\\\[0-9])+$", "").trim();
 	
-			if (ctx.MINUS() != null) {
+			//Inverted - wtf?
+			if (ctx.MINUS() == null) {
 				terms_stack.peek().unary = -1;
 				terms_stack.peek().dash = true;
 			}
@@ -1075,7 +1074,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 		// first item is pseudocolon | : or ::
 		Boolean isPseudoElem = ctx.getChild(0).getText().length() != 1;
 		Selector.PseudoPage tmpPseudo;
-		String first = extractTextUnescaped(ctx.getChild(1).getText());
+		String first = extractTextUnescaped(ctx.getChild(1).getText());		
 		if (ctx.FUNCTION() == null) {
 			// ident
 			tmpPseudo = rf.createPseudoPage(first, null);
@@ -1093,6 +1092,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 				log.error("pseudo element cannot be used as a function");
 				tmpPseudo = null;
 			} else {
+				System.out.println("KRAKRKA: "+first);
 				// function
 				// var first is function name
 				String value = "";
@@ -1113,6 +1113,7 @@ public class CSSParserListenerImpl implements CSSParserListener {
 						addCSSError(ctx, "Pseudo selector syntax error: " + ctx.getText());
 					}
 				}
+				System.out.println("DEZE: "+value+" - "+first);
 				tmpPseudo = rf.createPseudoPage(value, first);
 			}
 		}
